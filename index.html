@@ -16,30 +16,36 @@
         body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 15px; color: var(--text); }
         .container { max-width: 1100px; margin: auto; }
         
-        /* Cấu trúc Header mới: 2 hàng dọc */
+        /* Header Box - Layout dọc */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-            padding: 20px; border-radius: 20px; margin-bottom: 25px; color: white;
-            display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            padding: 24px; border-radius: 20px; margin-bottom: 25px; color: white;
+            display: flex; flex-direction: column; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        /* Hàng 1: Chào và Logout */
-        .header-top {
-            display: flex; justify-content: space-between; align-items: center;
+        /* Hàng trên: Chào và Logout */
+        .header-main {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 20px;
         }
 
-        /* Hàng 2: UID nằm dưới */
-        .uid-row {
+        /* Hàng dưới: UID */
+        .header-footer {
             border-top: 1px solid rgba(255,255,255,0.1);
             padding-top: 15px;
         }
 
+        .uid-title {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+            color: rgba(255,255,255,0.5); margin-bottom: 8px; font-weight: 600;
+        }
+
         .uid-badge { 
-            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; 
-            border: 1px dashed rgba(255,255,255,0.2); font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.1); font-family: 'Courier New', monospace;
             display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
         }
-        #my-uid { word-break: break-all; font-size: 12px; flex: 1; color: #93c5fd; font-weight: bold; }
+        #my-uid { word-break: break-all; font-size: 12px; flex: 1; color: #93c5fd; }
 
         /* Grid nhân vật */
         .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
@@ -53,39 +59,34 @@
         .stat-line { display: flex; justify-content: space-between; padding: 7px 0; font-size: 14px; border-bottom: 1px solid #f8fafc; }
         .stat-line:last-of-type { border-bottom: none; }
         .stat-label { color: var(--sub); font-weight: 500; }
-        .stat-value { font-weight: 700; font-family: 'Segoe UI', sans-serif; }
+        .stat-value { font-weight: 700; }
 
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: var(--green); }
         .offline { background: #f1f5f9; color: var(--sub); }
 
-        button { background: var(--primary); color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        button { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         button:hover { background: #1d4ed8; }
 
-        .logout-btn {
-            background: var(--red) !important;
-            padding: 6px 15px !important;
-            font-size: 11px !important;
-            text-transform: uppercase;
-        }
+        .logout-btn { background: var(--red) !important; font-size: 11px !important; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
-            <div class="header-top">
+            <div class="header-main">
                 <div>
-                    <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
-                    <div style="font-size: 1.4em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
+                    <div style="font-size: 0.85em; opacity: 0.7; margin-bottom: 4px;">Hệ thống theo dõi nhân vật</div>
+                    <div style="font-size: 1.5em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
                 </div>
-                <button onclick="logout()" class="logout-btn">Đăng xuất</button>
+                <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
             </div>
 
-            <div class="uid-row">
-                <div style="font-size: 11px; margin-bottom: 5px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px;">Mã định danh (UID)</div>
+            <div class="header-footer">
+                <div class="uid-title">Mã định danh cá nhân (UID)</div>
                 <div class="uid-badge">
                     <span id="my-uid">Đang tải...</span>
-                    <button onclick="copyUID()" style="font-size: 10px; padding: 5px 10px; background: rgba(255,255,255,0.15);">SAO CHÉP</button>
+                    <button onclick="copyUID()" style="padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">SAO CHÉP</button>
                 </div>
             </div>
         </div>
@@ -113,22 +114,22 @@
 
         function logout() {
             if(confirm("Bạn có chắc muốn đăng xuất?")) {
-                auth.signOut().then(() => {
-                    window.location.href = "login.html";
-                });
+                auth.signOut().then(() => { window.location.href = "login.html"; });
             }
         }
-
-        db.ref('users/' + uid + '/username').on('value', (snap) => {
-            const name = snap.val();
-            document.getElementById('user-name').innerText = name ? name : "User_" + uid.substring(0, 5);
-        });
 
         function copyUID() {
             navigator.clipboard.writeText(uid);
             alert("Đã chép UID thành công!");
         }
 
+        // Lấy tên từ Database
+        db.ref('users/' + uid + '/username').on('value', (snap) => {
+            const name = snap.val();
+            document.getElementById('user-name').innerText = name ? name : "User_" + uid.substring(0, 5);
+        });
+
+        // Lấy danh sách nhân vật
         db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
             const charList = document.getElementById('char-list');
             const data = snapshot.val();
@@ -160,7 +161,6 @@
                     <div class="stat-line"><span class="stat-label">⚔️ Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
                     <div class="stat-line" style="margin-top: 5px;"><span class="stat-label">📍 Bản đồ:</span><span class="stat-value">${stats.map || "---"}</span></div>
                     <div class="stat-line"><span class="stat-label">🚩 Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
-                    
                     <div style="font-size: 10px; color: #94a3b8; margin-top: 15px; text-align: right; font-style: italic;">
                         Cập nhật: ${timeDiff < 5 ? 'vừa xong' : timeDiff + ' giây trước'}
                     </div>
