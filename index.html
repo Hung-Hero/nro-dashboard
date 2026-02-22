@@ -3,106 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO Dashboard - Realtime</title>
+    <title>NRO Dashboard - Realtime Premium</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
-        :root { --bg: #f0f2f5; --card: #ffffff; --primary: #0062cc; --red: #d93025; --text: #1c1e21; }
-        body { background: var(--bg); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; color: var(--text); }
-        .container { max-width: 1000px; margin: auto; }
+        :root { 
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --primary: #2563eb; 
+            --secondary: #64748b;
+            --red: #e11d48; 
+            --blue: #0284c7;
+            --orange: #f59e0b;
+            --green: #10b981;
+            --text-main: #0f172a; 
+        }
+        body { background: var(--bg); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 20px; color: var(--text-main); line-height: 1.5; }
+        .container { max-width: 1100px; margin: auto; }
         
-        /* Box UID */
-        .uid-box { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid var(--primary); }
-        .uid-text { font-family: monospace; color: var(--primary); font-weight: bold; background: #eef2ff; padding: 5px 10px; border-radius: 4px; }
+        /* Header Box */
+        .header-box { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            padding: 25px; border-radius: 16px; margin-bottom: 25px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); color: white;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .uid-badge { background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: monospace; }
         
         /* Grid nhân vật */
-        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .char-card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; }
-        .char-header { border-bottom: 1px solid #eee; margin-bottom: 12px; padding-bottom: 8px; display: flex; justify-content: space-between; }
-        .char-name { font-weight: bold; color: var(--primary); font-size: 1.1em; }
+        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .char-card { 
+            background: var(--card); border-radius: 20px; padding: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9; transition: transform 0.2s;
+        }
+        .char-card:hover { transform: translateY(-5px); }
         
-        /* Chỉ số */
-        .stat-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-        .stat-label { color: #65676b; }
-        .stat-value { font-weight: 600; }
-        .status-online { color: #28a745; font-size: 11px; font-weight: bold; }
-        .status-offline { color: #6c757d; font-size: 11px; }
+        .char-header { border-bottom: 2px solid #f8fafc; margin-bottom: 15px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; text-transform: uppercase; }
+        
+        /* Chỉ số Row */
+        .stat-group { display: flex; flex-direction: column; gap: 10px; }
+        .stat-line { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 4px 0; }
+        .stat-label { color: var(--secondary); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .stat-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        /* Trạng thái */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .online { background: #dcfce7; color: var(--green); }
+        .offline { background: #f1f5f9; color: var(--secondary); }
+
+        button { 
+            background: var(--primary); color: white; border: none; padding: 8px 16px; 
+            border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+        button:hover { background: #1d4ed8; }
+
+        .no-data { text-align: center; grid-column: 1/-1; padding: 50px; color: var(--secondary); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="uid-box">
-            <span>Chào mừng <b>s2conghung</b>! UID của bạn: </span>
-            <span class="uid-text" id="my-uid">Đang tải...</span>
-            <button onclick="copyUID()" style="margin-left:10px; cursor:pointer;">Sao chép</button>
+        <div class="header-box">
+            <div>
+                <div style="font-size: 0.9em; opacity: 0.8;">Chào mừng chiến binh,</div>
+                <div style="font-size: 1.5em; font-weight: 800;">s2conghung</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.8em; margin-bottom: 5px; opacity: 0.8;">UID CỐ ĐỊNH:</div>
+                <div class="uid-badge">
+                    <span id="my-uid">Đang tải...</span>
+                    <button onclick="copyUID()" style="margin-left:10px; font-size: 0.8em; padding: 4px 8px;">COPY</button>
+                </div>
+            </div>
         </div>
 
         <div class="char-grid" id="char-list">
-            </div>
+            <div class="no-data">Đang kết nối đến hệ thống Radar...</div>
+        </div>
     </div>
 
     <script>
-        // CẤU HÌNH FIREBASE CỦA BẠN
         const firebaseConfig = {
-  apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
-  authDomain: "nro-controller.firebaseapp.com",
-  databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
-  projectId: "nro-controller",
-  storageBucket: "nro-controller.firebasestorage.app",
-  messagingSenderId: "670799372996",
-  appId: "1:670799372996:web:93b2f0558501e283badf91",
-  measurementId: "G-3DXCBC5JVK"
-};
+            apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
+            authDomain: "nro-controller.firebaseapp.com",
+            databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
+            projectId: "nro-controller",
+            storageBucket: "nro-controller.firebasestorage.app",
+            messagingSenderId: "670799372996",
+            appId: "1:670799372996:web:93b2f0558501e283badf91",
+            measurementId: "G-3DXCBC5JVK"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2"; // UID từ URL
+        const uid = urlParams.get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
 
         document.getElementById('my-uid').innerText = uid;
 
         function copyUID() {
             navigator.clipboard.writeText(uid);
-            alert("Đã sao chép UID!");
+            alert("Đã sao chép mã định danh!");
         }
 
-        // LẮNG NGHE DỮ LIỆU
         db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
             const charList = document.getElementById('char-list');
             const data = snapshot.val();
             
             if (!data) {
-                charList.innerHTML = "<div>Chưa có dữ liệu nhân vật.</div>";
+                charList.innerHTML = "<div class='no-data'>Chưa phát hiện tín hiệu nhân vật. Hãy mở bản Mod Java!</div>";
                 return;
             }
 
             charList.innerHTML = "";
-            // Thay thế đoạn render thẻ nhân vật trong file index.html của bạn
-Object.keys(data).forEach(name => {
-    const stats = data[name];
-    if (typeof stats !== 'object' || stats === null) return;
+            Object.keys(data).forEach(name => {
+                const stats = data[name];
+                if (typeof stats !== 'object' || stats === null) return;
 
-    const lastUpdate = stats.last_update || 0;
-    const isOnline = (Math.floor(Date.now() / 1000) - lastUpdate) < 30;
+                const lastUpdate = stats.last_update || 0;
+                const timeDiff = Math.floor(Date.now() / 1000) - lastUpdate;
+                const isOnline = timeDiff < 30;
 
-    const card = document.createElement('div');
-    card.className = 'char-card';
-    card.innerHTML = `
-        <div class="char-name">
-            <span>${name}</span>
-            <span style="color: ${isOnline ? '#10b981' : '#94a3b8'}">${isOnline ? '● Online' : '○ Offline'}</span>
-        </div>
-        <div class="stat-row"><span>Sức mạnh:</span><b>${Number(stats.sm || 0).toLocaleString()}</b></div>
-        <div class="stat-row"><span>Tiềm năng:</span><b>${Number(stats.tn || 0).toLocaleString()}</b></div>
-        <div class="stat-row"><span>Sức đánh:</span><b style="color: #ef4444">${Number(stats.sd || 0).toLocaleString()}</b></div>
-        <div class="stat-row"><span>HP / MP:</span><b>${Number(stats.hp || 0).toLocaleString()} / ${Number(stats.mp || 0).toLocaleString()}</b></div>
-        <div class="stat-row"><span>Bản đồ:</span><b>${stats.map || "---"} (Khu ${stats.khu || 0})</b></div>
-        <div style="font-size: 10px; color: #94a3b8; margin-top: 10px; text-align: right;">
-            Cập nhật ${Math.floor(Date.now()/1000) - lastUpdate}s trước
-        </div>
-    `;
-    charList.appendChild(card);
-});
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `
+                    <div class="char-header">
+                        <span class="char-name">👤 ${name}</span>
+                        <span class="badge ${isOnline ? 'online' : 'offline'}">
+                            ${isOnline ? '● Đang chạy' : '○ Ngoại tuyến'}
+                        </span>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-line">
+                            <span class="stat-label">⚔️ Sức đánh:</span>
+                            <span class="stat-value" style="color: var(--red)">${Number(stats.sd || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">❤️ HP hiện tại:</span>
+                            <span class="stat-value" style="color: var(--red)">${Number(stats.hp || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">💙 MP hiện tại:</span>
+                            <span class="stat-value" style="color: var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">🔥 Sức mạnh:</span>
+                            <span class="stat-value" style="color: var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">🌟 Tiềm năng:</span>
+                            <span class="stat-value" style="color: var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-line" style="border-top: 1px dashed #eee; margin-top: 5px; padding-top: 10px;">
+                            <span class="stat-label">📍 Vị trí:</span>
+                            <span class="stat-value" style="color: var(--secondary)">${stats.map || "---"} [Khu ${stats.khu || 0}]</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 10px; color: #94a3b8; margin-top: 15px; text-align: right; font-style: italic;">
+                        Cập nhật: ${timeDiff < 5 ? 'vừa xong' : timeDiff + 's trước'}
+                    </div>
+                `;
+                charList.appendChild(card);
+            });
         });
     </script>
 </body>
