@@ -12,16 +12,14 @@
             --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
             --red: #ef4444; --text: #1e293b; --sub: #64748b;
         }
-        /* Fix lỗi hiển thị nút đăng xuất khi chưa login */
         body { 
             background: var(--bg); 
             font-family: 'Inter', sans-serif; 
             margin: 0; padding: 15px; 
-            display: none; /* Chỉ hiện khi auth thành công */
+            display: none; 
         }
         .container { max-width: 500px; margin: auto; }
 
-        /* Giao diện Header mới theo ảnh 23:31 */
         .header-box { 
             background: var(--card); padding: 20px; border-radius: 20px; 
             margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
@@ -37,7 +35,6 @@
         .uid-text { font-size: 13px; color: var(--sub); }
         .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 11px; }
 
-        /* Card nhân vật */
         .char-card { 
             background: var(--card); border-radius: 24px; padding: 25px; 
             margin-bottom: 15px; border: 1px solid #f1f5f9; 
@@ -51,6 +48,32 @@
         .stat-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #f1f5f9; font-size: 14px; }
         .stat-label { color: var(--sub); }
         .stat-value { font-weight: 700; }
+
+        /* CSS Mới cho ô Chat */
+        .chat-control {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+        }
+        .chat-input:focus { border-color: var(--primary); }
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +105,6 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // FIX LỖI ĐĂNG NHẬP: Kiểm tra auth trước khi hiện body
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.body.style.display = "block";
@@ -95,12 +117,10 @@
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
 
-            // Lấy tên Admin
             db.ref('users/' + uid + '/username').on('value', snap => {
                 document.getElementById('user-name').innerText = snap.val() || "Admin";
             });
 
-            // FIX LỖI HIỂN THỊ: Lắng nghe data nhân vật
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
                 const charList = document.getElementById('char-list');
                 const data = snapshot.val();
@@ -116,7 +136,6 @@
                     const lastUpdate = stats.last_update || 0;
                     const isOnline = (Math.floor(Date.now() / 1000) - lastUpdate) < 30;
 
-                    // Chỉ tạo card nếu đây là object dữ liệu nhân vật thực sự
                     if(typeof stats === 'object') {
                         const card = document.createElement('div');
                         card.className = 'char-card';
@@ -130,14 +149,43 @@
                             <div class="stat-line"><span class="stat-label">Sức mạnh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
                             <div class="stat-line"><span class="stat-label">Tiềm năng:</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
                             <div class="stat-line"><span class="stat-label">HP:</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                          <div class="stat-line"><span class="stat-label">MP:</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">MP:</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
                             <div class="stat-line"><span class="stat-label">Map:</span><span class="stat-value">${stats.map || "---"}</span></div>
                             <div class="stat-line"><span class="stat-label">Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                            
+                            <div class="chat-control">
+                                <input type="text" id="chat-val-${name}" class="chat-input" placeholder="Nhập nội dung chat...">
+                                <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
+                            </div>
+
                             <div style="font-size:10px; color:#cbd5e1; text-align:right; margin-top:10px;">Cập nhật: vừa xong</div>
                         `;
                         charList.appendChild(card);
                     }
                 });
+            });
+        }
+
+        // Logic gửi lệnh chat lên Firebase
+        function sendChat(charName) {
+            const uid = document.getElementById('my-uid').innerText;
+            const input = document.getElementById(`chat-val-${charName}`);
+            const content = input.value.trim();
+
+            if (!content) {
+                alert("Vui lòng nhập nội dung!");
+                return;
+            }
+
+            // Ghi nội dung vào node 'chat_cmd' của nhân vật
+            db.ref(`users/${uid}/chars/${charName}/chat_cmd`).set({
+                text: content,
+                time: Date.now()
+            }).then(() => {
+                alert("Đã gửi lệnh chat cho " + charName);
+                input.value = ""; // Xóa ô nhập sau khi gửi
+            }).catch(err => {
+                alert("Lỗi: " + err.message);
             });
         }
 
