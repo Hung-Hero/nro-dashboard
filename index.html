@@ -50,30 +50,46 @@
         .stat-value { font-weight: 700; }
 
         /* CSS Mới cho ô Chat */
-        .chat-control {
-            margin-top: 15px;
-            display: flex;
-            gap: 8px;
-        }
-        .chat-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-        }
-        .chat-input:focus { border-color: var(--primary); }
-        .send-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-        }
+        /* FIX LỖI NÚT CHAT BỊ LỆCH */
+    .chat-control {
+        margin-top: 15px;
+        display: flex; /* Sử dụng flex để các thành phần nằm cùng hàng */
+        gap: 8px;      /* Khoảng cách giữa ô nhập và nút */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .chat-input {
+        flex: 1;       /* Ô nhập chiếm toàn bộ không gian còn lại */
+        min-width: 0;  /* Tránh input bị tràn trên một số trình duyệt */
+        padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box; /* Quan trọng để không bị lệch */
+    }
+
+    .chat-input:focus { border-color: var(--primary); }
+
+    .send-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0 15px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        white-space: nowrap; /* Không cho chữ "GỬI" bị xuống dòng */
+        height: 40px;        /* Khớp chiều cao với input */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Hiệu ứng bấm nút */
+    .send-btn:active { opacity: 0.8; transform: scale(0.98); }
     </style>
 </head>
 <body>
