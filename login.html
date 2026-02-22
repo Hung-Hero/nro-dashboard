@@ -74,7 +74,7 @@
                     })
                     .catch((err) => {
                         // Sửa lỗi hiển thị thông báo sai tk/mk
-                        if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+                        if (err.code === "auth/invalid-login-credentials" ||err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
                             alert("Sai tài khoản hoặc mật khẩu!");
                         } else if (err.code === "auth/invalid-email") {
                             alert("Định dạng Email không hợp lệ!");
