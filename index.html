@@ -3,118 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO Dashboard - Realtime Premium</title>
+    <title>NRO Dashboard - Premium</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
         :root { 
-            --bg: #f8fafc; 
-            --card: #ffffff; 
-            --primary: #2563eb; 
-            --secondary: #64748b;
-            --red: #e11d48; 
-            --blue: #0284c7;
-            --orange: #f59e0b;
-            --green: #10b981;
-            --text-main: #0f172a; 
+            --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
+            --red: #e11d48; --blue: #0284c7; --orange: #f59e0b;
+            --green: #10b981; --text: #0f172a; --sub: #64748b;
         }
-        body { background: var(--bg); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 20px; color: var(--text-main); line-height: 1.5; }
-        .container { max-width: 1100px; margin: auto; }
+        body { background: var(--bg); font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 15px; color: var(--text); }
+        .container { max-width: 1000px; margin: auto; }
         
-        /* Header Box */
+        /* Sửa lỗi Header đè chữ */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-            padding: 25px; border-radius: 16px; margin-bottom: 25px; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); color: white;
-            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; border-radius: 16px; margin-bottom: 20px; color: white;
+            display: flex; flex-direction: column; gap: 15px; /* Ép xuống dòng trên Mobile */
         }
-        .uid-badge { background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: monospace; }
-        
-        /* Grid nhân vật */
-        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        @media (min-width: 768px) {
+            .header-box { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+
+        .uid-badge { 
+            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.2); font-family: monospace;
+            display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
+        }
+        #my-uid { word-break: break-all; font-size: 13px; flex: 1; }
+
+        /* Char Card */
+        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
-            border: 1px solid #f1f5f9; transition: transform 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
         }
-        .char-card:hover { transform: translateY(-5px); }
+        .char-header { border-bottom: 1px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .char-name { font-weight: 800; color: var(--primary); text-transform: uppercase; }
         
-        .char-header { border-bottom: 2px solid #f8fafc; margin-bottom: 15px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; text-transform: uppercase; }
-        
-        /* Chỉ số Row */
-        .stat-group { display: flex; flex-direction: column; gap: 10px; }
-        .stat-line { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 4px 0; }
-        .stat-label { color: var(--secondary); font-weight: 500; display: flex; align-items: center; gap: 6px; }
-        .stat-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .stat-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+        .stat-label { color: var(--sub); font-weight: 500; }
+        .stat-value { font-weight: 700; }
 
-        /* Trạng thái */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: var(--green); }
-        .offline { background: #f1f5f9; color: var(--secondary); }
+        .offline { background: #f1f5f9; color: var(--sub); }
 
-        button { 
-            background: var(--primary); color: white; border: none; padding: 8px 16px; 
-            border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-        button:hover { background: #1d4ed8; }
-
-        .no-data { text-align: center; grid-column: 1/-1; padding: 50px; color: var(--secondary); }
+        button { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
             <div>
-                <div style="font-size: 0.9em; opacity: 0.8;">Chào mừng chiến binh,</div>
-                <div style="font-size: 1.5em; font-weight: 800;">s2conghung</div>
+                <div style="font-size: 0.9em; opacity: 0.7;">Chào mừng chiến binh,</div>
+                <div style="font-size: 1.4em; font-weight: 800;">s2conghung</div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 0.8em; margin-bottom: 5px; opacity: 0.8;">UID CỐ ĐỊNH:</div>
-                <div class="uid-badge">
-                    <span id="my-uid">Đang tải...</span>
-                    <button onclick="copyUID()" style="margin-left:10px; font-size: 0.8em; padding: 4px 8px;">COPY</button>
-                </div>
+            <div class="uid-badge">
+                <span id="my-uid">Đang tải...</span>
+                <button onclick="copyUID()">COPY</button>
             </div>
         </div>
 
-        <div class="char-grid" id="char-list">
-            <div class="no-data">Đang kết nối đến hệ thống Radar...</div>
-        </div>
+        <div class="char-grid" id="char-list"></div>
     </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
-            authDomain: "nro-controller.firebaseapp.com",
-            databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
-            projectId: "nro-controller",
-            storageBucket: "nro-controller.firebasestorage.app",
-            messagingSenderId: "670799372996",
-            appId: "1:670799372996:web:93b2f0558501e283badf91",
-            measurementId: "G-3DXCBC5JVK"
-        };
-
+  apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
+  authDomain: "nro-controller.firebaseapp.com",
+  databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
+  projectId: "nro-controller",
+  storageBucket: "nro-controller.firebasestorage.app",
+  messagingSenderId: "670799372996",
+  appId: "1:670799372996:web:93b2f0558501e283badf91",
+  measurementId: "G-3DXCBC5JVK"
+};
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
-
+        const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
         document.getElementById('my-uid').innerText = uid;
 
         function copyUID() {
             navigator.clipboard.writeText(uid);
-            alert("Đã sao chép mã định danh!");
+            alert("Đã chép UID!");
         }
 
         db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
             const charList = document.getElementById('char-list');
             const data = snapshot.val();
-            
-            if (!data) {
-                charList.innerHTML = "<div class='no-data'>Chưa phát hiện tín hiệu nhân vật. Hãy mở bản Mod Java!</div>";
-                return;
-            }
+            if (!data) return;
 
             charList.innerHTML = "";
             Object.keys(data).forEach(name => {
@@ -130,38 +108,16 @@
                 card.innerHTML = `
                     <div class="char-header">
                         <span class="char-name">👤 ${name}</span>
-                        <span class="badge ${isOnline ? 'online' : 'offline'}">
-                            ${isOnline ? '● Đang chạy' : '○ Ngoại tuyến'}
-                        </span>
+                        <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? 'ĐANG CHẠY' : 'NGOẠI TUYẾN'}</span>
                     </div>
-                    <div class="stat-group">
-                        <div class="stat-line">
-                            <span class="stat-label">⚔️ Sức đánh:</span>
-                            <span class="stat-value" style="color: var(--red)">${Number(stats.sd || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">❤️ HP hiện tại:</span>
-                            <span class="stat-value" style="color: var(--red)">${Number(stats.hp || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">💙 MP hiện tại:</span>
-                            <span class="stat-value" style="color: var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">🔥 Sức mạnh:</span>
-                            <span class="stat-value" style="color: var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">🌟 Tiềm năng:</span>
-                            <span class="stat-value" style="color: var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="stat-line" style="border-top: 1px dashed #eee; margin-top: 5px; padding-top: 10px;">
-                            <span class="stat-label">📍 Vị trí:</span>
-                            <span class="stat-value" style="color: var(--secondary)">${stats.map || "---"} [Khu ${stats.khu || 0}]</span>
-                        </div>
-                    </div>
-                    <div style="font-size: 10px; color: #94a3b8; margin-top: 15px; text-align: right; font-style: italic;">
-                        Cập nhật: ${timeDiff < 5 ? 'vừa xong' : timeDiff + 's trước'}
+                    <div class="stat-line"><span class="stat-label">⚔️ Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">💙 MP hiện tại:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">🔥 Sức mạnh:</span><span class="stat-value" style="color:var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">🌟 Tiềm năng:</span><span class="stat-value" style="color:var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span></div>
+                    <div class="stat-line" style="border-top: 1px dashed #eee; margin-top: 8px; padding-top: 10px;">
+                        <span class="stat-label">📍 Vị trí:</span>
+                        <span class="stat-value">${stats.map || "---"} [Khu ${stats.khu || 0}]</span>
                     </div>
                 `;
                 charList.appendChild(card);
