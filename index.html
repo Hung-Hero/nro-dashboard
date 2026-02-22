@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
-        /* ... Các style cũ giữ nguyên ... */
         :root { 
             --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
             --red: #e11d48; --blue: #0284c7; --orange: #f59e0b;
@@ -17,22 +16,32 @@
         body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 15px; color: var(--text); }
         .container { max-width: 1100px; margin: auto; }
         
+        /* Cấu trúc Header mới: 2 hàng dọc */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-            padding: 20px; border-radius: 16px; margin-bottom: 25px; color: white;
-            display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            padding: 20px; border-radius: 20px; margin-bottom: 25px; color: white;
+            display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
-        @media (min-width: 768px) {
-            .header-box { flex-direction: row; justify-content: space-between; align-items: center; }
+
+        /* Hàng 1: Chào và Logout */
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Hàng 2: UID nằm dưới */
+        .uid-row {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
         }
 
         .uid-badge { 
-            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.2); font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; 
+            border: 1px dashed rgba(255,255,255,0.2); font-family: 'Courier New', monospace;
             display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
         }
-        #my-uid { word-break: break-all; font-size: 13px; flex: 1; color: #93c5fd; font-weight: bold; }
+        #my-uid { word-break: break-all; font-size: 12px; flex: 1; color: #93c5fd; font-weight: bold; }
 
+        /* Grid nhân vật */
         .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
@@ -53,32 +62,31 @@
         button { background: var(--primary); color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         button:hover { background: #1d4ed8; }
 
-        /* Style cho nút Logout */
         .logout-btn {
             background: var(--red) !important;
-            margin-left: 10px;
-            padding: 5px 12px !important;
+            padding: 6px 15px !important;
             font-size: 11px !important;
             text-transform: uppercase;
-        }
-        .logout-btn:hover {
-            background: #be123c !important;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
-            <div>
-                <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
-                <div style="font-size: 1.4em; font-weight: 800; display: flex; align-items: center;">
-                    Chào, <span id="user-name" style="margin: 0 5px;">Chiến binh</span>
-                    <button onclick="logout()" class="logout-btn">Đăng xuất</button>
+            <div class="header-top">
+                <div>
+                    <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
+                    <div style="font-size: 1.4em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
                 </div>
+                <button onclick="logout()" class="logout-btn">Đăng xuất</button>
             </div>
-            <div class="uid-badge">
-                <span id="my-uid">Đang tải...</span>
-                <button onclick="copyUID()">SAO CHÉP</button>
+
+            <div class="uid-row">
+                <div style="font-size: 11px; margin-bottom: 5px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px;">Mã định danh (UID)</div>
+                <div class="uid-badge">
+                    <span id="my-uid">Đang tải...</span>
+                    <button onclick="copyUID()" style="font-size: 10px; padding: 5px 10px; background: rgba(255,255,255,0.15);">SAO CHÉP</button>
+                </div>
             </div>
         </div>
 
@@ -98,23 +106,19 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const auth = firebase.auth(); // Khởi tạo Auth
+        const auth = firebase.auth();
         
         const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
         document.getElementById('my-uid').innerText = uid;
 
-        // Hàm Đăng xuất
         function logout() {
             if(confirm("Bạn có chắc muốn đăng xuất?")) {
                 auth.signOut().then(() => {
-                    window.location.href = "login.html"; // Chuyển về trang login
-                }).catch((error) => {
-                    alert("Lỗi khi đăng xuất: " + error.message);
+                    window.location.href = "login.html";
                 });
             }
         }
 
-        // Cập nhật tên chào mừng dựa trên dữ liệu hoặc UID
         db.ref('users/' + uid + '/username').on('value', (snap) => {
             const name = snap.val();
             document.getElementById('user-name').innerText = name ? name : "User_" + uid.substring(0, 5);
