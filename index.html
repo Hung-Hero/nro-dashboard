@@ -57,7 +57,7 @@
     <div class="container">
         <div class="header-box">
             <div class="header-top">
-                <div class="welcome-text">👋 Chào buổi tối, <span id="user-name">...</span></div>
+                <div class="welcome-text">Xin chào: <span id="user-name">...</span></div>
                 <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
             </div>
             <div class="uid-row">
@@ -122,17 +122,17 @@
                         card.className = 'char-card';
                         card.innerHTML = `
                             <div class="char-header">
-                                <span class="char-name">👤 ${name}</span>
+                                <span class="char-name">${name}</span>
                                 <span class="status-badge ${isOnline ? 'online' : 'offline'}">
-                                    ${isOnline ? '● ĐANG CHẠY' : '○ NGOẠI TUYẾN'}
+                                    ${isOnline ? '● ONLINE' : '○ OFFLINE'}
                                 </span>
                             </div>
-                            <div class="stat-line"><span class="stat-label">🔥 Sức mạnh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">🌟 Tiềm năng:</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                          <div class="stat-line"><span>💙 MP hiện tại:</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">📍 Bản đồ:</span><span class="stat-value">${stats.map || "---"}</span></div>
-                            <div class="stat-line"><span class="stat-label">🚩 Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                            <div class="stat-line"><span class="stat-label">Sức mạnh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">Tiềm năng:</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">HP:</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                          <div class="stat-line"><span>MP:</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">Map:</span><span class="stat-value">${stats.map || "---"}</span></div>
+                            <div class="stat-line"><span class="stat-label">Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
                             <div style="font-size:10px; color:#cbd5e1; text-align:right; margin-top:10px;">Cập nhật: vừa xong</div>
                         `;
                         charList.appendChild(card);
@@ -149,7 +149,7 @@
 
         function copyUID() {
             navigator.clipboard.writeText(document.getElementById('my-uid').innerText);
-            alert("Đã sao chép Token!");
+            alert("Đã sao chép UID!");
         }
     </script>
 </body>
