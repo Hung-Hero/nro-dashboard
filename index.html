@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO Dashboard - Premium</title>
+    <title>NRO Monitor - Premium Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
@@ -12,56 +12,59 @@
             --red: #e11d48; --blue: #0284c7; --orange: #f59e0b;
             --green: #10b981; --text: #0f172a; --sub: #64748b;
         }
-        body { background: var(--bg); font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 15px; color: var(--text); }
-        .container { max-width: 1000px; margin: auto; }
+        body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 15px; color: var(--text); }
+        .container { max-width: 1100px; margin: auto; }
         
-        /* Sửa lỗi Header đè chữ */
+        /* Header Box - Tự động thích ứng Mobile/PC */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-            padding: 20px; border-radius: 16px; margin-bottom: 20px; color: white;
-            display: flex; flex-direction: column; gap: 15px; /* Ép xuống dòng trên Mobile */
+            padding: 20px; border-radius: 16px; margin-bottom: 25px; color: white;
+            display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
         @media (min-width: 768px) {
             .header-box { flex-direction: row; justify-content: space-between; align-items: center; }
         }
 
         .uid-badge { 
-            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; 
-            border: 1px solid rgba(255,255,255,0.2); font-family: monospace;
+            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.2); font-family: 'Courier New', monospace;
             display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
         }
-        #my-uid { word-break: break-all; font-size: 13px; flex: 1; }
+        #my-uid { word-break: break-all; font-size: 13px; flex: 1; color: #93c5fd; font-weight: bold; }
 
-        /* Char Card */
-        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        /* Grid hiển thị */
+        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
         }
-        .char-header { border-bottom: 1px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .char-name { font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        .char-header { border-bottom: 2px solid #f8fafc; margin-bottom: 12px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .char-name { font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .stat-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+        /* Cấu trúc dòng thông số */
+        .stat-line { display: flex; justify-content: space-between; padding: 7px 0; font-size: 14px; border-bottom: 1px solid #f8fafc; }
+        .stat-line:last-of-type { border-bottom: none; }
         .stat-label { color: var(--sub); font-weight: 500; }
-        .stat-value { font-weight: 700; }
+        .stat-value { font-weight: 700; font-family: 'Segoe UI', sans-serif; }
 
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: var(--green); }
         .offline { background: #f1f5f9; color: var(--sub); }
 
-        button { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        button { background: var(--primary); color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
             <div>
-                <div style="font-size: 0.9em; opacity: 0.7;">Chào mừng chiến binh,</div>
-                <div style="font-size: 1.4em; font-weight: 800;">s2conghung</div>
+                <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
+                <div style="font-size: 1.4em; font-weight: 800;">Chào, s2conghung</div>
             </div>
             <div class="uid-badge">
                 <span id="my-uid">Đang tải...</span>
-                <button onclick="copyUID()">COPY</button>
+                <button onclick="copyUID()">SAO CHÉP</button>
             </div>
         </div>
 
@@ -79,6 +82,7 @@
   appId: "1:670799372996:web:93b2f0558501e283badf91",
   measurementId: "G-3DXCBC5JVK"
 };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
@@ -86,17 +90,21 @@
 
         function copyUID() {
             navigator.clipboard.writeText(uid);
-            alert("Đã chép UID!");
+            alert("Đã chép UID thành công!");
         }
 
         db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
             const charList = document.getElementById('char-list');
             const data = snapshot.val();
-            if (!data) return;
+            if (!data) {
+                charList.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;'>Đang chờ dữ liệu từ Java...</div>";
+                return;
+            }
 
             charList.innerHTML = "";
             Object.keys(data).forEach(name => {
                 const stats = data[name];
+                // Bỏ qua các dữ liệu rác không phải đối tượng (hp, mp lẻ)
                 if (typeof stats !== 'object' || stats === null) return;
 
                 const lastUpdate = stats.last_update || 0;
@@ -108,16 +116,18 @@
                 card.innerHTML = `
                     <div class="char-header">
                         <span class="char-name">👤 ${name}</span>
-                        <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? 'ĐANG CHẠY' : 'NGOẠI TUYẾN'}</span>
+                        <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? '● ĐANG CHẠY' : '○ NGOẠI TUYẾN'}</span>
                     </div>
-                    <div class="stat-line"><span class="stat-label">⚔️ Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
-                    <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                    <div class="stat-line"><span class="stat-label">💙 MP hiện tại:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
                     <div class="stat-line"><span class="stat-label">🔥 Sức mạnh:</span><span class="stat-value" style="color:var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span></div>
                     <div class="stat-line"><span class="stat-label">🌟 Tiềm năng:</span><span class="stat-value" style="color:var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span></div>
-                    <div class="stat-line" style="border-top: 1px dashed #eee; margin-top: 8px; padding-top: 10px;">
-                        <span class="stat-label">📍 Vị trí:</span>
-                        <span class="stat-value">${stats.map || "---"} [Khu ${stats.khu || 0}]</span>
+                    <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">💙 MP hiện tại:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                    <div class="stat-line"><span class="stat-label">⚔️ Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
+                    <div class="stat-line" style="margin-top: 5px;"><span class="stat-label">📍 Bản đồ:</span><span class="stat-value">${stats.map || "---"}</span></div>
+                    <div class="stat-line"><span class="stat-label">🚩 Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                    
+                    <div style="font-size: 10px; color: #94a3b8; margin-top: 15px; text-align: right; font-style: italic;">
+                        Cập nhật: ${timeDiff < 5 ? 'vừa xong' : timeDiff + ' giây trước'}
                     </div>
                 `;
                 charList.appendChild(card);
