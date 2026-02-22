@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NRO Monitor - Premium Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
+        /* ... Các style cũ giữ nguyên ... */
         :root { 
             --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
             --red: #e11d48; --blue: #0284c7; --orange: #f59e0b;
@@ -15,7 +17,6 @@
         body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 15px; color: var(--text); }
         .container { max-width: 1100px; margin: auto; }
         
-        /* Header Box - Đã fix lỗi tràn và hỗ trợ tên linh hoạt */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
             padding: 20px; border-radius: 16px; margin-bottom: 25px; color: white;
@@ -51,6 +52,18 @@
 
         button { background: var(--primary); color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         button:hover { background: #1d4ed8; }
+
+        /* Style cho nút Logout */
+        .logout-btn {
+            background: var(--red) !important;
+            margin-left: 10px;
+            padding: 5px 12px !important;
+            font-size: 11px !important;
+            text-transform: uppercase;
+        }
+        .logout-btn:hover {
+            background: #be123c !important;
+        }
     </style>
 </head>
 <body>
@@ -58,7 +71,10 @@
         <div class="header-box">
             <div>
                 <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
-                <div style="font-size: 1.4em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
+                <div style="font-size: 1.4em; font-weight: 800; display: flex; align-items: center;">
+                    Chào, <span id="user-name" style="margin: 0 5px;">Chiến binh</span>
+                    <button onclick="logout()" class="logout-btn">Đăng xuất</button>
+                </div>
             </div>
             <div class="uid-badge">
                 <span id="my-uid">Đang tải...</span>
@@ -71,20 +87,32 @@
 
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
-  authDomain: "nro-controller.firebaseapp.com",
-  databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
-  projectId: "nro-controller",
-  storageBucket: "nro-controller.firebasestorage.app",
-  messagingSenderId: "670799372996",
-  appId: "1:670799372996:web:93b2f0558501e283badf91",
-  measurementId: "G-3DXCBC5JVK"
-};
+            apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
+            authDomain: "nro-controller.firebaseapp.com",
+            databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
+            projectId: "nro-controller",
+            storageBucket: "nro-controller.firebasestorage.app",
+            messagingSenderId: "670799372996",
+            appId: "1:670799372996:web:93b2f0558501e283badf91",
+            measurementId: "G-3DXCBC5JVK"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
+        const auth = firebase.auth(); // Khởi tạo Auth
         
+        const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
         document.getElementById('my-uid').innerText = uid;
+
+        // Hàm Đăng xuất
+        function logout() {
+            if(confirm("Bạn có chắc muốn đăng xuất?")) {
+                auth.signOut().then(() => {
+                    window.location.href = "login.html"; // Chuyển về trang login
+                }).catch((error) => {
+                    alert("Lỗi khi đăng xuất: " + error.message);
+                });
+            }
+        }
 
         // Cập nhật tên chào mừng dựa trên dữ liệu hoặc UID
         db.ref('users/' + uid + '/username').on('value', (snap) => {
