@@ -77,43 +77,32 @@
             }
 
             charList.innerHTML = "";
-            Object.keys(data).forEach(name => {
-                const info = data[name];
-                
-                // LỌC RÁC: Nếu info không phải Object (như các biến hp, map bị gửi lẻ trước đó) thì bỏ qua
-                if (typeof info !== 'object' || info === null) return;
+            // Thay thế đoạn render thẻ nhân vật trong file index.html của bạn
+Object.keys(data).forEach(name => {
+    const stats = data[name];
+    if (typeof stats !== 'object' || stats === null) return;
 
-                const lastActive = info.last_update || 0;
-                const isOnline = (Math.floor(Date.now() / 1000) - lastActive) < 30;
+    const lastUpdate = stats.last_update || 0;
+    const isOnline = (Math.floor(Date.now() / 1000) - lastUpdate) < 30;
 
-                const card = document.createElement('div');
-                card.className = 'char-card';
-                card.innerHTML = `
-                    <div class="char-header">
-                        <span class="char-name">${name}</span>
-                        <span class="${isOnline ? 'status-online' : 'status-offline'}">
-                            ${isOnline ? '● ONLINE' : '○ OFFLINE'}
-                        </span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">Sức mạnh:</span>
-                        <span class="stat-value" style="color:#f39c12">${Number(info.sm || 0).toLocaleString()}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">HP:</span>
-                        <span class="stat-value" style="color:var(--red)">${Number(info.hp || 0).toLocaleString()}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">MP:</span>
-                        <span class="stat-value" style="color:var(--primary)">${Number(info.mp || 0).toLocaleString()}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">Bản đồ:</span>
-                        <span class="stat-value">${info.map || 'Không rõ'}</span>
-                    </div>
-                `;
-                charList.appendChild(card);
-            });
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.innerHTML = `
+        <div class="char-name">
+            <span>${name}</span>
+            <span style="color: ${isOnline ? '#10b981' : '#94a3b8'}">${isOnline ? '● Online' : '○ Offline'}</span>
+        </div>
+        <div class="stat-row"><span>Sức mạnh:</span><b>${Number(stats.sm || 0).toLocaleString()}</b></div>
+        <div class="stat-row"><span>Tiềm năng:</span><b>${Number(stats.tn || 0).toLocaleString()}</b></div>
+        <div class="stat-row"><span>Sức đánh:</span><b style="color: #ef4444">${Number(stats.sd || 0).toLocaleString()}</b></div>
+        <div class="stat-row"><span>HP / MP:</span><b>${Number(stats.hp || 0).toLocaleString()} / ${Number(stats.mp || 0).toLocaleString()}</b></div>
+        <div class="stat-row"><span>Bản đồ:</span><b>${stats.map || "---"} (Khu ${stats.khu || 0})</b></div>
+        <div style="font-size: 10px; color: #94a3b8; margin-top: 10px; text-align: right;">
+            Cập nhật ${Math.floor(Date.now()/1000) - lastUpdate}s trước
+        </div>
+    `;
+    charList.appendChild(card);
+});
         });
     </script>
 </body>
