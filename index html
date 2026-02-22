@@ -36,7 +36,14 @@
     <div class="grid" id="char-list"></div>
 
     <script>
-        const firebaseConfig = { /* DÁN CẤU HÌNH GIỐNG FILE LOGIN */ };
+        const firebaseConfig = { /* DÁN CẤU HÌNH GIỐNG FILE LOGIN */
+apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
+  authDomain: "nro-controller.firebaseapp.com",
+  databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
+  projectId: "nro-controller",
+
+  appId: "1:670799372996:web:93b2f0558501e283badf91"
+};
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
