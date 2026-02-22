@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - NRO</title>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #f8fafc; --card-bg: #ffffff; --border: #f1f5f9; --text-main: #1e293b; --blue: #2563eb; --red: #ef4444; }
+        body { background: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; margin: 0; padding: 12px; }
+        .navbar { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 18px; margin-bottom: 20px; }
+        .nav-token-box { background: var(--bg); border: 1px dashed var(--border); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .stats div { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .stats b { color: #64748b; font-weight: 500; }
+        .stats span { font-weight: 700; }
+        .btn-copy { background: var(--blue); color: white; padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 12px; display: none; }
+    </style>
+</head>
+<body>
+    <div id="toast">Đã chép mã Token!</div>
+    <div class="navbar">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:14px;">👋 Chào, <b id="user-name" style="color:var(--blue)">...</b></div>
+            <a href="login.html" style="text-decoration:none; color:var(--red); font-weight:800; font-size:12px;">THOÁT</a>
+        </div>
+        <div class="nav-token-box">
+            <span>Mã Token: <b id="top-token" style="font-family:monospace;">...</b></span>
+            <span class="btn-copy" onclick="copyToken()">SAO CHÉP</span>
+        </div>
+    </div>
+    <div class="grid" id="char-list"></div>
+
+    <script>
+        const firebaseConfig = { /* DÁN CẤU HÌNH GIỐNG FILE LOGIN */ };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        if (!uid) window.location.href = "login.html";
+
+        function copyToken() {
+            navigator.clipboard.writeText(document.getElementById('top-token').innerText);
+            const t = document.getElementById('toast');
+            t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
+        }
+
+        db.ref('users/' + uid).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            document.getElementById('user-name').innerText = data.username || "Chiến binh";
+            document.getElementById('top-token').innerText = data.token || "N/A";
+            const container = document.getElementById('char-list');
+            container.innerHTML = "";
+            if (data.chars) {
+                Object.keys(data.chars).forEach(name => {
+                    const i = data.chars[name];
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.innerHTML = `
+                        <div style="color:var(--blue); font-weight:800; font-size:18px; margin-bottom:15px">${name}</div>
+                        <div class="stats">
+                            <div><b>Sức mạnh</b> <span>${Number(i.sm || 0).toLocaleString('de-DE')}</span></div>
+                            <div><b>HP</b> <span style="color:var(--red)">${Number(i.hp || 0).toLocaleString('de-DE')}</span></div>
+                            <div><b>MP</b> <span style="color:var(--blue)">${Number(i.mp || 0).toLocaleString('de-DE')}</span></div>
+                            <div><b>Bản đồ</b> <span>${i.map || "..."}</span></div>
+                        </div>`;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:#64748b">Tài khoản trống. Hãy nhập Token vào game.</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
