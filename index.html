@@ -64,8 +64,8 @@
         <div class="header-box">
             <div class="header-main">
                 <div>
-                    <div style="font-size: 0.85em; opacity: 0.7; margin-bottom: 4px;">Hệ thống theo dõi nhân vật</div>
-                    <div style="font-size: 1.5em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
+                    
+                    <div style="font-size: 0.85em; font-weight: 800;">Chào, <span id="user-name"></span></div>
                 </div>
                 <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
             </div>
@@ -138,16 +138,16 @@
                     card.className = 'char-card';
                     card.innerHTML = `
                         <div class="char-header">
-                            <span class="char-name">👤 ${name}</span>
-                            <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? '● ĐANG CHẠY' : '○ NGOẠI TUYẾN'}</span>
+                            <span class="char-name">${name}</span>
+                            <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</span>
                         </div>
-                        <div class="stat-line"><span class="stat-label">🔥 Sức mạnh:</span><span class="stat-value" style="color:var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">🌟 Tiềm năng:</span><span class="stat-value" style="color:var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">💙 MP hiện tại:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">⚔️ Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
-                        <div class="stat-line" style="margin-top: 5px;"><span class="stat-label">📍 Bản đồ:</span><span class="stat-value">${stats.map || "---"}</span></div>
-                        <div class="stat-line"><span class="stat-label">🚩 Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                        <div class="stat-line"><span class="stat-label">Sức mạnh:</span><span class="stat-value" style="color:var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span></div>
+                        <div class="stat-line"><span class="stat-label">Tiềm năng:</span><span class="stat-value" style="color:var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span></div>
+                        <div class="stat-line"><span class="stat-label">HP:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                        <div class="stat-line"><span class="stat-label">MP:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                        <div class="stat-line"><span class="stat-label">Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
+                        <div class="stat-line" style="margin-top: 5px;"><span class="stat-label">Map:</span><span class="stat-value">${stats.map || "---"}</span></div>
+                        <div class="stat-line"><span class="stat-label">Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
                     `;
                     charList.appendChild(card);
                 });
