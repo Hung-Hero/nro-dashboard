@@ -2,89 +2,156 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - NRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRO Dashboard - Quản lý nhân vật</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8fafc; --card-bg: #ffffff; --border: #f1f5f9; --text-main: #1e293b; --blue: #2563eb; --red: #ef4444; }
-        body { background: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; margin: 0; padding: 12px; }
-        .navbar { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 18px; margin-bottom: 20px; }
-        .nav-token-box { background: var(--bg); border: 1px dashed var(--border); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .stats div { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .stats b { color: #64748b; font-weight: 500; }
-        .stats span { font-weight: 700; }
-        .btn-copy { background: var(--blue); color: white; padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; }
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 12px; display: none; }
+        :root { --bg: #f1f5f9; --card: #ffffff; --primary: #2563eb; --red: #ef4444; --text: #1e293b; --green: #10b981; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
+        
+        /* Navbar & UID Box */
+        .navbar { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .uid-container { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 12px; border-radius: 12px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .uid-label { font-size: 12px; color: #64748b; font-weight: 600; }
+        #display-uid { font-family: 'Courier New', monospace; color: var(--primary); font-weight: 800; }
+        
+        /* Grid Danh sách nhân vật */
+        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; }
+        .char-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .online { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        
+        /* Chỉ số nhân vật */
+        .char-name { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .stat-label { color: #64748b; font-weight: 500; }
+        .stat-value { font-weight: 700; }
+        
+        /* Nút bấm */
+        .btn { cursor: pointer; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; font-size: 11px; transition: 0.2s; }
+        .btn-copy { background: var(--primary); color: white; }
+        .btn-logout { background: var(--red); color: white; text-decoration: none; padding: 8px 16px; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div id="toast">Đã chép mã Token!</div>
+
     <div class="navbar">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:14px;">👋 Chào, <b id="user-name" style="color:var(--blue)">...</b></div>
-            <a href="login.html" style="text-decoration:none; color:var(--red); font-weight:800; font-size:12px;">THOÁT</a>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-size: 14px; color: #64748b;">Chào mừng trở lại,</span>
+                <div style="font-size: 20px; font-weight: 800;" id="user-email">Đang tải...</div>
+            </div>
+            <a href="login.html" class="btn btn-logout">ĐĂNG XUẤT</a>
         </div>
-        <div class="nav-token-box">
-            <span>Mã Token: <b id="top-token" style="font-family:monospace;">...</b></span>
-            <span class="btn-copy" onclick="copyToken()">SAO CHÉP</span>
+
+        <div class="uid-container">
+            <div>
+                <div class="uid-label">MÃ UID CỐ ĐỊNH (DÁN VÀO JAVA)</div>
+                <div id="display-uid">Đang tải dữ liệu...</div>
+            </div>
+            <button class="btn btn-copy" onclick="copyUID()">SAO CHÉP</button>
         </div>
     </div>
-    <div class="grid" id="char-list"></div>
+
+    <div class="char-grid" id="char-list">
+        <div style="text-align: center; grid-column: 1/-1; padding: 50px; color: #94a3b8;">
+            Đang chờ dữ liệu từ bản Mod Java...
+        </div>
+    </div>
 
     <script>
-        const firebaseConfig = { /* DÁN CẤU HÌNH GIỐNG FILE LOGIN */
-apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
-  authDomain: "nro-controller.firebaseapp.com",
-  databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
-  projectId: "nro-controller",
-  storageBucket: "nro-controller.firebasestorage.app",
-  messagingSenderId: "670799372996",
-  appId: "1:670799372996:web:93b2f0558501e283badf91",
-  measurementId: "G-3DXCBC5JVK"
-};
+        // 1. CẤU HÌNH FIREBASE (Dán mã của bạn vào đây)
+        const firebaseConfig = {
+              apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
+    authDomain: "nro-controller.firebaseapp.com",
+    databaseURL: "https://nro-controller-default-rtdb.firebaseio.com",
+    projectId: "nro-controller",
+    storageBucket: "nro-controller.firebasestorage.app",
+    messagingSenderId: "670799372996",
+    appId: "1:670799372996:web:93b2f0558501e283badf91",
+    measurementId: "G-3DXCBC5JVK"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid');
-        if (!uid) window.location.href = "login.html";
+        // 2. LẤY UID TỪ URL
+        const params = new URLSearchParams(window.location.search);
+        const uid = params.get('uid');
 
-        function copyToken() {
-            navigator.clipboard.writeText(document.getElementById('top-token').innerText);
-            const t = document.getElementById('toast');
-            t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
+        if (!uid) {
+            window.location.href = "login.html";
+        } else {
+            document.getElementById('display-uid').innerText = uid;
+            startListening();
         }
 
-        db.ref('users/' + uid).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-            document.getElementById('user-name').innerText = data.username || "Chiến binh";
-            document.getElementById('top-token').innerText = data.token || "N/A";
-            const container = document.getElementById('char-list');
-            container.innerHTML = "";
-            if (data.chars) {
-                Object.keys(data.chars).forEach(name => {
-                    const i = data.chars[name];
-                    const div = document.createElement('div');
-                    div.className = 'card';
-                    div.innerHTML = `
-                        <div style="color:var(--blue); font-weight:800; font-size:18px; margin-bottom:15px">${name}</div>
-                        <div class="stats">
-                            <div><b>Sức mạnh</b> <span>${Number(i.sm || 0).toLocaleString('de-DE')}</span></div>
-                            <div><b>HP</b> <span style="color:var(--red)">${Number(i.hp || 0).toLocaleString('de-DE')}</span></div>
-                            <div><b>MP</b> <span style="color:var(--blue)">${Number(i.mp || 0).toLocaleString('de-DE')}</span></div>
-                            <div><b>Bản đồ</b> <span>${i.map || "..."}</span></div>
-                        </div>`;
-                    container.appendChild(div);
+        function copyUID() {
+            navigator.clipboard.writeText(uid);
+            alert("Đã sao chép UID! Hãy dán vào hằng số FIXED_UID trong code Java 1.3 của bạn.");
+        }
+
+        // 3. LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC
+        function startListening() {
+            // Lấy thông tin tài khoản
+            db.ref('users/' + uid + '/username').once('value', (s) => {
+                document.getElementById('user-email').innerText = s.val() || "Chiến binh";
+            });
+
+            // Lắng nghe danh sách nhân vật
+            db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
+                const charList = document.getElementById('char-list');
+                const data = snapshot.val();
+
+                if (!data) {
+                    charList.innerHTML = `<div style="text-align: center; grid-column: 1/-1; padding: 50px; color: #94a3b8;">Chưa có nhân vật nào. Hãy chạy bản Mod Java để gửi dữ liệu!</div>`;
+                    return;
+                }
+
+                charList.innerHTML = ""; // Xóa danh sách cũ
+                
+                Object.keys(data).forEach(key => {
+                    const char = data[key];
+                    const timeAgo = Math.floor((Date.now() / 1000) - char.last_update);
+                    const isOnline = timeAgo < 15; // Nếu cập nhật trong 15s gần nhất thì coi là Online
+
+                    const card = document.createElement('div');
+                    card.className = 'char-card';
+                    card.innerHTML = `
+                        <div class="char-name">
+                            <span>${key}</span>
+                            <span style="font-size: 11px; color: ${isOnline ? '#10b981' : '#94a3b8'}">
+                                <span class="status-dot ${isOnline ? 'online' : ''}"></span>
+                                ${isOnline ? 'ĐANG CHẠY' : 'NGOẠI TUYẾN'}
+                            </span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Sức mạnh</span>
+                            <span class="stat-value" style="color: #f59e0b">${Number(char.sm || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">HP hiện tại</span>
+                            <span class="stat-value" style="color: var(--red)">${Number(char.hp || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">MP hiện tại</span>
+                            <span class="stat-value" style="color: var(--primary)">${Number(char.mp || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="stat-row" style="border: none;">
+                            <span class="stat-label">Bản đồ</span>
+                            <span class="stat-value">${char.map || "Không rõ"}</span>
+                        </div>
+                        <div style="font-size: 10px; color: #cbd5e1; margin-top: 10px; text-align: right;">
+                            Cập nhật: ${timeAgo} giây trước
+                        </div>
+                    `;
+                    charList.appendChild(card);
                 });
-            } else {
-                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:#64748b">Tài khoản trống. Hãy nhập Token vào game.</div>`;
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
