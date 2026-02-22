@@ -3,83 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO Monitor - Premium Edition</title>
+    <title>NRO Monitor - Hệ thống quản lý</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
         :root { 
             --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
-            --red: #e11d48; --blue: #0284c7; --orange: #f59e0b;
-            --green: #10b981; --text: #0f172a; --sub: #64748b;
+            --red: #ef4444; --text: #1e293b; --sub: #64748b;
         }
-
-        /* KHẮC PHỤC LỖI: Mặc định ẩn toàn bộ trang */
+        /* Fix lỗi hiển thị nút đăng xuất khi chưa login */
         body { 
             background: var(--bg); 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            margin: 0; padding: 15px; color: var(--text);
-            display: none; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 15px; 
+            display: none; /* Chỉ hiện khi auth thành công */
         }
+        .container { max-width: 500px; margin: auto; }
 
-        .container { max-width: 1100px; margin: auto; }
-        
+        /* Giao diện Header mới theo ảnh 23:31 */
         .header-box { 
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-            padding: 24px; border-radius: 20px; margin-bottom: 25px; color: white;
-            display: flex; flex-direction: column; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            background: var(--card); padding: 20px; border-radius: 20px; 
+            margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .welcome-text { font-weight: 600; font-size: 1.1em; }
+        .logout-btn { color: var(--red); background: none; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; }
 
-        .header-main { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-
-        .header-footer { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-
-        .uid-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 8px; font-weight: 600; }
-
-        .uid-badge { 
-            background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.1); font-family: 'Courier New', monospace;
-            display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
+        .uid-row { 
+            background: #f1f5f9; padding: 12px 15px; border-radius: 12px; 
+            display: flex; justify-content: space-between; align-items: center; 
         }
-        #my-uid { word-break: break-all; font-size: 12px; flex: 1; color: #93c5fd; }
+        .uid-text { font-size: 13px; color: var(--sub); }
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 11px; }
 
-        .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
-        .char-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        .char-header { border-bottom: 2px solid #f8fafc; margin-bottom: 12px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .char-name { font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .stat-line { display: flex; justify-content: space-between; padding: 7px 0; font-size: 14px; border-bottom: 1px solid #f8fafc; }
-        .stat-value { font-weight: 700; }
-
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
-        .online { background: #dcfce7; color: var(--green); }
+        /* Card nhân vật */
+        .char-card { 
+            background: var(--card); border-radius: 24px; padding: 25px; 
+            margin-bottom: 15px; border: 1px solid #f1f5f9; 
+        }
+        .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+        .online { background: #dcfce7; color: #10b981; }
         .offline { background: #f1f5f9; color: var(--sub); }
 
-        button { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
-        .logout-btn { background: var(--red) !important; font-size: 11px !important; }
+        .stat-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #f1f5f9; font-size: 14px; }
+        .stat-label { color: var(--sub); }
+        .stat-value { font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
-            <div class="header-main">
-                <div>
-                    
-                    <div style="font-size: 0.85em; font-weight: 800;">Chào, <span id="user-name"></span></div>
-                </div>
+            <div class="header-top">
+                <div class="welcome-text">👋 Chào buổi tối, <span id="user-name">...</span></div>
                 <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
             </div>
-
-            <div class="header-footer">
-                <div class="uid-title">Mã định danh cá nhân (UID)</div>
-                <div class="uid-badge">
-                    <span id="my-uid">Đang tải...</span>
-                    <button onclick="copyUID()" style="padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">SAO CHÉP</button>
-                </div>
+            <div class="uid-row">
+                <div class="uid-text">Mã Token: <b id="my-uid" style="color:var(--primary)">...</b></div>
+                <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
             </div>
         </div>
-
-        <div class="char-grid" id="char-list"></div>
+        <div id="char-list"></div>
     </div>
 
     <script>
@@ -90,40 +76,37 @@
             projectId: "nro-controller",
             storageBucket: "nro-controller.firebasestorage.app",
             messagingSenderId: "670799372996",
-            appId: "1:670799372996:web:93b2f0558501e283badf91",
-            measurementId: "G-3DXCBC5JVK"
+            appId: "1:670799372996:web:93b2f0558501e283badf91"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
         const auth = firebase.auth();
+        const db = firebase.database();
 
-        // CHỐT CHẶN BẢO MẬT: Kiểm tra trạng thái đăng nhập
+        // FIX LỖI ĐĂNG NHẬP: Kiểm tra auth trước khi hiện body
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Đã đăng nhập: Hiện trang và tải dữ liệu
                 document.body.style.display = "block";
-                initMonitor(user.uid);
+                startMonitor(user.uid);
             } else {
-                // Chưa đăng nhập: Đá về trang login
                 window.location.href = "login.html";
             }
         });
 
-        function initMonitor(currentUid) {
-            document.getElementById('my-uid').innerText = currentUid;
+        function startMonitor(uid) {
+            document.getElementById('my-uid').innerText = uid;
 
-            // Lấy tên từ Database
-            db.ref('users/' + currentUid + '/username').on('value', (snap) => {
-                const name = snap.val();
-                document.getElementById('user-name').innerText = name ? name : "User_" + currentUid.substring(0, 5);
+            // Lấy tên Admin
+            db.ref('users/' + uid + '/username').on('value', snap => {
+                document.getElementById('user-name').innerText = snap.val() || "Admin";
             });
 
-            // Lấy danh sách nhân vật
-            db.ref('users/' + currentUid + '/chars').on('value', (snapshot) => {
+            // FIX LỖI HIỂN THỊ: Lắng nghe data nhân vật
+            db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
                 const charList = document.getElementById('char-list');
                 const data = snapshot.val();
+                
                 if (!data) {
-                    charList.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;'>Đang chờ dữ liệu...</div>";
+                    charList.innerHTML = `<div style="text-align:center; color:var(--sub); margin-top:50px;">Tài khoản chưa có dữ liệu nhân vật.</div>`;
                     return;
                 }
 
@@ -131,41 +114,41 @@
                 Object.keys(data).forEach(name => {
                     const stats = data[name];
                     const lastUpdate = stats.last_update || 0;
-                    const timeDiff = Math.floor(Date.now() / 1000) - lastUpdate;
-                    const isOnline = timeDiff < 30;
+                    const isOnline = (Math.floor(Date.now() / 1000) - lastUpdate) < 30;
 
-                    const card = document.createElement('div');
-                    card.className = 'char-card';
-                    card.innerHTML = `
-                        <div class="char-header">
-                            <span class="char-name">${name}</span>
-                            <span class="badge ${isOnline ? 'online' : 'offline'}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</span>
-                        </div>
-                        <div class="stat-line"><span class="stat-label">Sức mạnh:</span><span class="stat-value" style="color:var(--orange)">${Number(stats.sm || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">Tiềm năng:</span><span class="stat-value" style="color:var(--primary)">${Number(stats.tn || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">HP:</span><span class="stat-value" style="color:var(--red)">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">MP:</span><span class="stat-value" style="color:var(--blue)">${Number(stats.mp || 0).toLocaleString()}</span></div>
-                        <div class="stat-line"><span class="stat-label">Sức đánh:</span><span class="stat-value" style="color:var(--red)">${Number(stats.sd || 0).toLocaleString()}</span></div>
-                        <div class="stat-line" style="margin-top: 5px;"><span class="stat-label">Map:</span><span class="stat-value">${stats.map || "---"}</span></div>
-                        <div class="stat-line"><span class="stat-label">Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
-                    `;
-                    charList.appendChild(card);
+                    // Chỉ tạo card nếu đây là object dữ liệu nhân vật thực sự
+                    if(typeof stats === 'object') {
+                        const card = document.createElement('div');
+                        card.className = 'char-card';
+                        card.innerHTML = `
+                            <div class="char-header">
+                                <span class="char-name">👤 ${name}</span>
+                                <span class="status-badge ${isOnline ? 'online' : 'offline'}">
+                                    ${isOnline ? '● ĐANG CHẠY' : '○ NGOẠI TUYẾN'}
+                                </span>
+                            </div>
+                            <div class="stat-line"><span class="stat-label">🔥 Sức mạnh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">🌟 Tiềm năng:</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">❤️ HP hiện tại:</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                            <div class="stat-line"><span class="stat-label">📍 Bản đồ:</span><span class="stat-value">${stats.map || "---"}</span></div>
+                            <div class="stat-line"><span class="stat-label">🚩 Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                            <div style="font-size:10px; color:#cbd5e1; text-align:right; margin-top:10px;">Cập nhật: vừa xong</div>
+                        `;
+                        charList.appendChild(card);
+                    }
                 });
             });
         }
 
         function logout() {
-            if(confirm("Bạn có chắc muốn đăng xuất?")) {
-                auth.signOut().then(() => { 
-                    window.location.href = "login.html"; 
-                });
+            if(confirm("Xác nhận đăng xuất?")) {
+                auth.signOut();
             }
         }
 
         function copyUID() {
-            const uidText = document.getElementById('my-uid').innerText;
-            navigator.clipboard.writeText(uidText);
-            alert("Đã chép UID thành công!");
+            navigator.clipboard.writeText(document.getElementById('my-uid').innerText);
+            alert("Đã sao chép Token!");
         }
     </script>
 </body>
