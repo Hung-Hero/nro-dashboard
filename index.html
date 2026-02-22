@@ -15,7 +15,7 @@
         body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 15px; color: var(--text); }
         .container { max-width: 1100px; margin: auto; }
         
-        /* Header Box - Tự động thích ứng Mobile/PC */
+        /* Header Box - Đã fix lỗi tràn và hỗ trợ tên linh hoạt */
         .header-box { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
             padding: 20px; border-radius: 16px; margin-bottom: 25px; color: white;
@@ -32,7 +32,6 @@
         }
         #my-uid { word-break: break-all; font-size: 13px; flex: 1; color: #93c5fd; font-weight: bold; }
 
-        /* Grid hiển thị */
         .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
@@ -41,7 +40,6 @@
         .char-header { border-bottom: 2px solid #f8fafc; margin-bottom: 12px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .char-name { font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Cấu trúc dòng thông số */
         .stat-line { display: flex; justify-content: space-between; padding: 7px 0; font-size: 14px; border-bottom: 1px solid #f8fafc; }
         .stat-line:last-of-type { border-bottom: none; }
         .stat-label { color: var(--sub); font-weight: 500; }
@@ -60,7 +58,7 @@
         <div class="header-box">
             <div>
                 <div style="font-size: 0.85em; opacity: 0.7;">Hệ thống theo dõi nhân vật</div>
-                <div style="font-size: 1.4em; font-weight: 800;">Chào, s2conghung</div>
+                <div style="font-size: 1.4em; font-weight: 800;">Chào, <span id="user-name">Chiến binh</span></div>
             </div>
             <div class="uid-badge">
                 <span id="my-uid">Đang tải...</span>
@@ -82,11 +80,17 @@
   appId: "1:670799372996:web:93b2f0558501e283badf91",
   measurementId: "G-3DXCBC5JVK"
 };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const uid = new URLSearchParams(window.location.search).get('uid') || "jRjxiFNRMpd29WTR6Er6LI0ptXz2";
+        
         document.getElementById('my-uid').innerText = uid;
+
+        // Cập nhật tên chào mừng dựa trên dữ liệu hoặc UID
+        db.ref('users/' + uid + '/username').on('value', (snap) => {
+            const name = snap.val();
+            document.getElementById('user-name').innerText = name ? name : "User_" + uid.substring(0, 5);
+        });
 
         function copyUID() {
             navigator.clipboard.writeText(uid);
@@ -97,14 +101,13 @@
             const charList = document.getElementById('char-list');
             const data = snapshot.val();
             if (!data) {
-                charList.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;'>Đang chờ dữ liệu từ Java...</div>";
+                charList.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;'>Đang chờ dữ liệu...</div>";
                 return;
             }
 
             charList.innerHTML = "";
             Object.keys(data).forEach(name => {
                 const stats = data[name];
-                // Bỏ qua các dữ liệu rác không phải đối tượng (hp, mp lẻ)
                 if (typeof stats !== 'object' || stats === null) return;
 
                 const lastUpdate = stats.last_update || 0;
