@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO DASHBOARD - FIXED</title>
+    <title>NRO DASHBOARD - FIXED LAST_UPDATE</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     
     <style>
-        :root { 
-            --bg: #f1f5f9; --card: #ffffff; --primary: #2563eb; 
-            --red: #ef4444; --text: #1e293b; --sub: #64748b; --border: #e2e8f0;
-        }
+        /* Giữ nguyên CSS đẹp của bạn */
+        :root { --bg: #f1f5f9; --card: #ffffff; --primary: #2563eb; --red: #ef4444; --text: #1e293b; --sub: #64748b; --border: #e2e8f0; }
         body { background: var(--bg); font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 20px; display: none; color: var(--text); }
         .container { max-width: 1200px; margin: auto; }
         .header-box { background: var(--card); padding: 20px 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .welcome-text { font-weight: 700; font-size: 1.1em; margin-bottom: 15px; display: block; }
         .controls-row { display: flex; align-items: center; gap: 15px; width: 100%; }
-        .uid-wrapper { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); flex: 1; box-sizing: border-box; min-width: 0; }
-        .uid-label { font-size: 12px; color: var(--sub); font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .uid-wrapper { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); flex: 1; min-width: 0; }
         #my-uid { font-family: 'Consolas', monospace; color: var(--primary); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; white-space: nowrap; }
-        .logout-btn { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 44px; display: flex; align-items: center; }
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 800; }
+        .logout-btn { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; height: 44px; }
+        
         #char-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); transition: 0.3s; }
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -30,14 +28,17 @@
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: #10b981; }
         .offline { background: #f1f5f9; color: var(--sub); }
+        
         .stat-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
         .stat-item { background: #f8fafc; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
         .stat-label { font-size: 11px; color: var(--sub); text-transform: uppercase; font-weight: 600; }
         .stat-value { font-weight: 700; font-size: 14px; }
+        
         .chat-control { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px dashed var(--border); }
-        .chat-input { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; }
+        .chat-input { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; outline: none; }
         .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        @media (max-width: 600px) { .controls-row { flex-direction: column; align-items: stretch; } #char-list { grid-template-columns: 1fr; } }
+        
+        @media (max-width: 600px) { .controls-row { flex-direction: column; } #char-list { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -57,7 +58,6 @@
     </div>
 
     <script>
-        // Cấu hình Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
             authDomain: "nro-controller.firebaseapp.com",
@@ -72,12 +72,8 @@
         const db = firebase.database();
 
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.body.style.display = "block";
-                startMonitor(user.uid);
-            } else {
-                window.location.href = "login.html";
-            }
+            if (user) { document.body.style.display = "block"; startMonitor(user.uid); }
+            else { window.location.href = "login.html"; }
         });
 
         function startMonitor(uid) {
@@ -86,7 +82,6 @@
                 document.getElementById('user-name').innerText = snap.val() || "Admin";
             });
 
-            // Lắng nghe dữ liệu nhân vật
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
                 const charList = document.getElementById('char-list');
                 const data = snapshot.val();
@@ -94,13 +89,14 @@
 
                 Object.keys(data).forEach(name => {
                     const stats = data[name];
-                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 40;
                     
-                    // Tìm xem thẻ nhân vật này đã có trên màn hình chưa
+                    // --- ĐIỀU KIỆN QUAN TRỌNG: Chỉ tạo thẻ nếu name không phải là last_update hoặc chat_cmd ---
+                    if (name === "last_update" || name === "chat_cmd" || typeof stats !== 'object') return;
+
+                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 40;
                     let card = document.getElementById(`card-${name}`);
                     
                     if (!card) {
-                        // Nếu chưa có thì mới tạo mới (chỉ chạy 1 lần duy nhất cho mỗi nhân vật)
                         card = document.createElement('div');
                         card.id = `card-${name}`;
                         card.className = 'char-card';
@@ -118,14 +114,14 @@
                                 <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value" id="pos-${name}">---</span></div>
                             </div>
                             <div class="chat-control">
-                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
+                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat PC..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
                                 <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
                             </div>
                         `;
                         charList.appendChild(card);
                     }
 
-                    // CẬP NHẬT DỮ LIỆU VÀO CÁC Ô ĐÃ CÓ (Không làm mất tiêu điểm input)
+                    // Cập nhật dữ liệu
                     const statusBadge = document.getElementById(`status-${name}`);
                     statusBadge.innerText = isOnline ? '● Online' : '○ Offline';
                     statusBadge.className = `status-badge ${isOnline ? 'online' : 'offline'}`;
@@ -138,7 +134,7 @@
                     document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} (Khu ${stats.khu || 0})`;
                 });
 
-                // Xóa bớt card nếu nhân vật không còn trong database
+                // Xóa bớt card nếu nhân vật bị xóa khỏi DB
                 Array.from(charList.children).forEach(child => {
                     const charName = child.id.replace('card-', '');
                     if (!data[charName]) child.remove();
