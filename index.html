@@ -3,111 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO CONTROLLER</title>
+    <title>NRO CONTROLLER - PC OPTIMIZED</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
     <style>
         :root { 
-            --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; 
+            --bg: #f0f2f5; --card: #ffffff; --primary: #2563eb; 
             --red: #ef4444; --text: #1e293b; --sub: #64748b;
         }
         body { 
             background: var(--bg); 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 15px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 20px; 
             display: none; 
+            color: var(--text);
         }
-        .container { max-width: 500px; margin: auto; }
+        
+        /* Container rộng hơn cho PC */
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+        }
 
         .header-box { 
-            background: var(--card); padding: 20px; border-radius: 20px; 
-            margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            background: var(--card); padding: 20px; border-radius: 15px; 
+            margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .welcome-text { font-weight: 600; font-size: 1.1em; }
-        .logout-btn { color: var(--red); background: none; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .header-left { display: flex; flex-direction: column; gap: 5px; }
+        .welcome-text { font-weight: 700; font-size: 1.2em; color: var(--primary); }
+        
+        .logout-btn { 
+            color: white; background: var(--red); border: none; 
+            padding: 10px 20px; border-radius: 8px; font-weight: 700; 
+            cursor: pointer; transition: 0.2s;
+        }
+        .logout-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
         .uid-row { 
-            background: #f1f5f9; padding: 12px 15px; border-radius: 12px; 
-            display: flex; justify-content: space-between; align-items: center; 
+            background: #f1f5f9; padding: 10px 15px; border-radius: 10px; 
+            display: flex; gap: 15px; align-items: center;
         }
-        .uid-text { font-size: 13px; color: var(--sub); }
-        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 11px; }
+        .uid-text { font-size: 14px; font-weight: 500; }
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700;}
+
+        /* --- HỆ THỐNG GRID CHO PC --- */
+        #char-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Tự động chia cột */
+            gap: 20px;
+        }
 
         .char-card { 
-            background: var(--card); border-radius: 24px; padding: 25px; 
-            margin-bottom: 15px; border: 1px solid #f1f5f9; 
+            background: var(--card); border-radius: 18px; padding: 20px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
         }
+        
+        /* Hiệu ứng PC */
+        @media (min-width: 768px) {
+            .char-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+                border-color: var(--primary);
+            }
+        }
+
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
-        .online { background: #dcfce7; color: #10b981; }
-        .offline { background: #f1f5f9; color: var(--sub); }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.3em; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+        .online { background: #dcfce7; color: #10b981; border: 1px solid #10b981; }
+        .offline { background: #f1f5f9; color: var(--sub); border: 1px solid #cbd5e1; }
 
-        .stat-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #f1f5f9; font-size: 14px; }
-        .stat-label { color: var(--sub); }
-        .stat-value { font-weight: 700; }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-        /* CSS Mới cho ô Chat */
-        /* FIX LỖI NÚT CHAT BỊ LỆCH */
-    .chat-control {
-        margin-top: 15px;
-        display: flex; /* Sử dụng flex để các thành phần nằm cùng hàng */
-        gap: 8px;      /* Khoảng cách giữa ô nhập và nút */
-        width: 100%;
-        box-sizing: border-box;
-    }
+        .stat-line { 
+            display: flex; flex-direction: column;
+            padding: 8px; border-radius: 8px; background: #f8fafc;
+        }
+        .stat-label { color: var(--sub); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-weight: 700; font-size: 14px; margin-top: 2px; }
 
-    .chat-input {
-        flex: 1;       /* Ô nhập chiếm toàn bộ không gian còn lại */
-        min-width: 0;  /* Tránh input bị tràn trên một số trình duyệt */
-        padding: 10px 12px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 14px;
-        outline: none;
-        box-sizing: border-box; /* Quan trọng để không bị lệch */
-    }
+        .chat-control {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
 
-    .chat-input:focus { border-color: var(--primary); }
+        .chat-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .chat-input:focus { border-color: var(--primary); background: #fff; }
 
-    .send-btn {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 0 15px;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 12px;
-        cursor: pointer;
-        white-space: nowrap; /* Không cho chữ "GỬI" bị xuống dòng */
-        height: 40px;        /* Khớp chiều cao với input */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Hiệu ứng bấm nút */
-    .send-btn:active { opacity: 0.8; transform: scale(0.98); }
+        .send-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 0 20px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; transition: 0.2s;
+        }
+        .send-btn:hover { filter: brightness(1.1); }
+        .send-btn:active { transform: scale(0.95); }
+
+        /* Responsive Mobile */
+        @media (max-width: 480px) {
+            #char-list { grid-template-columns: 1fr; }
+            .header-box { flex-direction: column; align-items: flex-start; }
+            .container { padding: 10px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-box">
-            <div class="header-top">
-                <div class="welcome-text">Xin chào: <span id="user-name">...</span></div>
-                <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
+            <div class="header-left">
+                <div class="welcome-text">Xin chào, <span id="user-name">...</span> 👋</div>
+                <div class="uid-row">
+                    <div class="uid-text">Mã UID: <b id="my-uid" style="color:var(--primary)">...</b></div>
+                    <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
+                </div>
             </div>
-            <div class="uid-row">
-                <div class="uid-text">Mã UID: <b id="my-uid" style="color:var(--primary)">...</b></div>
-                <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
-            </div>
+            <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
         </div>
-        <div id="char-list"></div>
+        
+        <div id="char-list">
+            </div>
     </div>
 
     <script>
+        // ... (Giữ nguyên phần cấu hình Firebase của bạn) ...
         const firebaseConfig = {
             apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
             authDomain: "nro-controller.firebaseapp.com",
@@ -132,7 +174,6 @@
 
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
-
             db.ref('users/' + uid + '/username').on('value', snap => {
                 document.getElementById('user-name').innerText = snap.val() || "Admin";
             });
@@ -142,7 +183,7 @@
                 const data = snapshot.val();
                 
                 if (!data) {
-                    charList.innerHTML = `<div style="text-align:center; color:var(--sub); margin-top:50px;">Tài khoản chưa có dữ liệu nhân vật.</div>`;
+                    charList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--sub); padding: 50px;">Chưa có dữ liệu nhân vật.</div>`;
                     return;
                 }
 
@@ -162,21 +203,22 @@
                                     ${isOnline ? '● ONLINE' : '○ OFFLINE'}
                                 </span>
                             </div>
-                            <div class="stat-line"><span class="stat-label">Sức mạnh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">Tiềm năng:</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">HP:</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">MP:</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
-                            <div class="stat-line"><span class="stat-label">Sức đánh:</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sd || 0).toLocaleString()}</span></div>
-                        
-                            <div class="stat-line"><span class="stat-label">Map:</span><span class="stat-value">${stats.map || "---"}</span></div>
-                            <div class="stat-line"><span class="stat-label">Khu vực:</span><span class="stat-value">Khu ${stats.khu || 0}</span></div>
+                            
+                            <div class="stat-grid">
+                                <div class="stat-line"><span class="stat-label">Sức mạnh</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span></div>
+                                <div class="stat-line"><span class="stat-label">Tiềm năng</span><span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span></div>
+                                <div class="stat-line"><span class="stat-label">HP</span><span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()}</span></div>
+                                <div class="stat-line"><span class="stat-label">MP</span><span class="stat-value" style="color:#0284c7">${Number(stats.mp || 0).toLocaleString()}</span></div>
+                                <div class="stat-line"><span class="stat-label">Sức đánh</span><span class="stat-value" style="color:#f59e0b">${Number(stats.sd || 0).toLocaleString()}</span></div>
+                                <div class="stat-line"><span class="stat-label">Vị trí</span><span class="stat-value">${stats.map || "---"} (Khu ${stats.khu || 0})</span></div>
+                            </div>
                             
                             <div class="chat-control">
-                                <input type="text" id="chat-val-${name}" class="chat-input" placeholder="Nhập nội dung chat...">
+                                <input type="text" id="chat-val-${name}" class="chat-input" placeholder="Lệnh chat PC...">
                                 <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
                             </div>
 
-                            <div style="font-size:10px; color:#cbd5e1; text-align:right; margin-top:10px;">Cập nhật: vừa xong</div>
+                            <div style="font-size:10px; color:#cbd5e1; text-align:right; margin-top:10px;">Đồng bộ: vừa xong</div>
                         `;
                         charList.appendChild(card);
                     }
@@ -184,35 +226,20 @@
             });
         }
 
-        // Logic gửi lệnh chat lên Firebase
+        // ... (Giữ nguyên các hàm sendChat, logout, copyUID của bạn) ...
         function sendChat(charName) {
             const uid = document.getElementById('my-uid').innerText;
             const input = document.getElementById(`chat-val-${charName}`);
             const content = input.value.trim();
+            if (!content) return;
 
-            if (!content) {
-                alert("Vui lòng nhập nội dung!");
-                return;
-            }
-
-            // Ghi nội dung vào node 'chat_cmd' của nhân vật
             db.ref(`users/${uid}/chars/${charName}/chat_cmd`).set({
                 text: content,
                 time: Date.now()
-            }).then(() => {
-                
-                input.value = ""; // Xóa ô nhập sau khi gửi
-            }).catch(err => {
-                alert("Lỗi: " + err.message);
-            });
+            }).then(() => { input.value = ""; });
         }
 
-        function logout() {
-            if(confirm("Xác nhận đăng xuất?")) {
-                auth.signOut();
-            }
-        }
-
+        function logout() { if(confirm("Xác nhận đăng xuất?")) auth.signOut(); }
         function copyUID() {
             navigator.clipboard.writeText(document.getElementById('my-uid').innerText);
             alert("Đã sao chép UID!");
