@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO DASHBOARD - FULL LINE STATS</title>
+    <title>NRO DASHBOARD</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
@@ -21,7 +21,7 @@
 
         .container { max-width: 1200px; margin: auto; }
 
-        /* Header tối ưu */
+        /* --- SỬA LỖI LỆCH UID --- */
         .header-box { 
             background: var(--card); padding: 25px; border-radius: 20px; 
             margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
@@ -30,61 +30,78 @@
         .welcome-text { font-weight: 700; font-size: 1.2em; margin-bottom: 15px; display: block; }
 
         .controls-row { 
-            display: flex; align-items: center; justify-content: space-between; gap: 15px; width: 100%; 
+            display: flex; align-items: stretch; justify-content: space-between; gap: 15px; width: 100%; 
         }
 
         .uid-wrapper { 
-            display: flex; align-items: center; gap: 12px; background: #f8fafc; 
-            padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); 
-            flex: 1; min-width: 0; 
+            display: flex; 
+            align-items: center; /* Căn giữa tất cả các phần tử bên trong theo chiều dọc */
+            gap: 12px; 
+            background: #f8fafc; 
+            padding: 0 15px; /* Giảm padding trên dưới về 0 để align chuẩn hơn */
+            height: 48px; /* Cố định chiều cao để đồng bộ với nút đăng xuất */
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            flex: 1; 
+            min-width: 0; 
+        }
+
+        .uid-label { 
+            font-size: 13px; 
+            color: var(--sub); 
+            font-weight: 700; 
+            white-space: nowrap;
+            line-height: 1; /* Loại bỏ khoảng cách dòng dư thừa gây lệch */
         }
 
         #my-uid { 
-            font-family: 'Consolas', monospace; color: var(--primary); 
-            font-size: 14px; font-weight: 600; overflow: hidden; 
-            text-overflow: ellipsis; white-space: nowrap; flex: 1; 
+            font-family: 'Consolas', monospace; 
+            color: var(--primary); 
+            font-size: 14px; 
+            font-weight: 600; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            flex: 1; 
+            line-height: 1; /* Loại bỏ khoảng cách dòng dư thừa */
+            display: flex;
+            align-items: center;
         }
 
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 7px 15px; border-radius: 8px; cursor: pointer; 
+            padding: 8px 15px; border-radius: 8px; cursor: pointer; 
             font-size: 11px; font-weight: 800; white-space: nowrap;
         }
 
         .logout-btn { 
             background: var(--red); color: white; border: none; 
             padding: 0 20px; border-radius: 12px; font-weight: 700; 
-            cursor: pointer; height: 45px; display: flex; align-items: center;
+            cursor: pointer; height: 48px; display: flex; align-items: center;
         }
 
-        /* Danh sách nhân vật */
+        /* Danh sách nhân vật (Mỗi chỉ số 1 dòng) */
         #char-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); transition: 0.3s; }
-        .char-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
+        .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .char-name { font-weight: 800; color: var(--primary); font-size: 1.3em; }
-        
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: #10b981; }
         .offline { background: #f1f5f9; color: var(--sub); }
 
-        /* FIX: Mỗi chỉ số 1 dòng */
         .stat-grid { display: flex; flex-direction: column; gap: 6px; }
         .stat-item { 
-            background: #f8fafc; padding: 10px 15px; border-radius: 10px; 
+            background: #f8fafc; padding: 12px 15px; border-radius: 10px; 
             display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid transparent;
         }
         .stat-label { font-size: 11px; color: var(--sub); text-transform: uppercase; font-weight: 700; }
         .stat-value { font-weight: 700; font-size: 14px; }
 
-        /* Chat control */
         .chat-control { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px dashed var(--border); }
         .chat-input { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; outline: none; }
         .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        @media (max-width: 600px) { .controls-row { flex-direction: column; } #char-list { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .controls-row { flex-direction: column; } .logout-btn { height: 44px; } }
     </style>
 </head>
 <body>
