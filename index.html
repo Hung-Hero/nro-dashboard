@@ -186,7 +186,7 @@
                                 <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value">${stats.map || "---"} (Khu ${stats.khu || 0})</span></div>
                             </div>
                             <div class="chat-control">
-                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat PC..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
+                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
                                 <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
                             </div>
                         `;
