@@ -17,23 +17,23 @@
 
         body { 
             background: var(--bg); font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 20px; display: none; color: var(--text); 
+            margin: 0; padding: 15px; display: none; color: var(--text); 
         }
 
         .container { max-width: 1200px; margin: auto; }
 
-        /* --- HEADER BOX CLEAN --- */
         .header-box { 
-            background: var(--card); padding: 25px; border-radius: 20px; 
+            background: var(--card); padding: 20px; border-radius: 20px; 
             margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
         }
 
-        .welcome-text { font-weight: 700; font-size: 1.2em; margin-bottom: 15px; display: block; }
+        .welcome-text { font-weight: 700; font-size: 1.1em; margin-bottom: 15px; display: block; }
 
         .controls-row { 
-            display: flex; align-items: stretch; justify-content: space-between; gap: 12px; width: 100%; 
+            display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; 
         }
 
+        /* --- SỬA LỖI TRÀN NÚT TẠI ĐÂY --- */
         .uid-wrapper { 
             display: flex; 
             align-items: center; 
@@ -47,43 +47,49 @@
         }
 
         #my-uid { 
-            font-family: 'Consolas', monospace; color: var(--primary); 
-            font-size: 15px; font-weight: 600; overflow: hidden; 
-            text-overflow: ellipsis; white-space: nowrap; flex: 1; 
-            display: flex; align-items: center; height: 100%; letter-spacing: 0.5px;
+            font-family: 'Consolas', monospace; 
+            color: var(--primary); 
+            font-size: 14px; 
+            font-weight: 600; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; /* Hiện dấu ... nếu quá dài */
+            flex: 1;
+            letter-spacing: 0.2px;
         }
 
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 0 15px; height: 34px; border-radius: 8px; cursor: pointer; 
-            font-size: 11px; font-weight: 800; white-space: nowrap;
-            display: flex; align-items: center; justify-content: center; margin-left: 10px;
+            padding: 0 12px; height: 32px; border-radius: 8px; cursor: pointer; 
+            font-size: 10px; font-weight: 800; white-space: nowrap;
+            flex-shrink: 0; /* KHÔNG CHO PHÉP NÚT BỊ CO LẠI HOẶC TRÀN */
+            display: flex; align-items: center; justify-content: center;
+            margin-left: 8px;
         }
 
         .logout-btn { 
             background: var(--red); color: white; border: none; 
-            padding: 0 20px; border-radius: 12px; font-weight: 700; 
-            cursor: pointer; height: 50px; display: flex; align-items: center;
-            justify-content: center; transition: 0.2s;
+            padding: 0 15px; border-radius: 12px; font-weight: 700; 
+            cursor: pointer; height: 48px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- STATUS BADGE VỚI CHẤM XANH --- */
+        /* --- STATUS VÀ CARD --- */
         .status-badge { 
-            padding: 5px 12px; border-radius: 20px; font-size: 11px; 
+            padding: 5px 12px; border-radius: 20px; font-size: 10px; 
             font-weight: 800; display: flex; align-items: center; gap: 6px; 
         }
         
-        /* Chấm tròn Online */
         .online { background: #dcfce7; color: #059669; }
         .online::before {
-            content: ""; width: 8px; height: 8px; background: var(--green);
+            content: ""; width: 7px; height: 7px; background: var(--green);
             border-radius: 50%; display: inline-block;
             animation: pulse-green 2s infinite;
         }
 
         .offline { background: #f1f5f9; color: var(--sub); }
         .offline::before {
-            content: ""; width: 8px; height: 8px; background: var(--sub);
+            content: ""; width: 7px; height: 7px; background: var(--sub);
             border-radius: 50%; display: inline-block; opacity: 0.5;
         }
 
@@ -93,27 +99,27 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        /* Danh sách nhân vật (Mỗi chỉ số 1 dòng) */
-        #char-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
+        #char-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .char-card { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid var(--border); }
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .char-name { font-weight: 800; color: var(--primary); font-size: 1.3em; }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; }
 
         .stat-grid { display: flex; flex-direction: column; gap: 8px; }
         .stat-item { 
-            background: #f8fafc; padding: 12px 15px; border-radius: 10px; 
+            background: #f8fafc; padding: 10px 15px; border-radius: 10px; 
             display: flex; justify-content: space-between; align-items: center;
         }
-        .stat-label { font-size: 11px; color: var(--sub); text-transform: uppercase; font-weight: 700; }
-        .stat-value { font-weight: 700; font-size: 14px; }
+        .stat-label { font-size: 10px; color: var(--sub); text-transform: uppercase; font-weight: 700; }
+        .stat-value { font-weight: 700; font-size: 13px; }
 
         .chat-control { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px dashed var(--border); }
-        .chat-input { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; outline: none; }
+        .chat-input { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; outline: none; font-size: 14px; }
         .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        @media (max-width: 600px) { 
-            .controls-row { flex-direction: column; } 
-            .uid-wrapper, .logout-btn { width: 100%; height: 48px; }
+        @media (max-width: 500px) { 
+            .controls-row { flex-direction: row; } /* Giữ hàng ngang trên mobile cho gọn */
+            #my-uid { font-size: 12px; }
+            .copy-btn { padding: 0 8px; font-size: 9px; }
         }
     </style>
 </head>
@@ -126,7 +132,9 @@
                     <span id="my-uid">Đang tải mã...</span>
                     <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
                 </div>
-                <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
+                <button onclick="logout()" class="logout-btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
             </div>
         </div>
         <div id="char-list"></div>
@@ -153,11 +161,8 @@
 
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
-            const currentUser = firebase.auth().currentUser;
-
             db.ref('users/' + uid + '/username').on('value', snap => {
-                const nameInDb = snap.val();
-                document.getElementById('user-name').innerText = nameInDb || (currentUser ? currentUser.email.split('@')[0] : "Người dùng");
+                document.getElementById('user-name').innerText = snap.val() || "Người dùng";
             });
 
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
@@ -168,7 +173,6 @@
                 Object.keys(data).forEach(name => {
                     const stats = data[name];
                     if (name === "last_update" || name === "chat_cmd" || typeof stats !== 'object') return;
-
                     const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 40;
                     let card = document.getElementById(`card-${name}`);
                     
@@ -196,22 +200,15 @@
                         `;
                         charList.appendChild(card);
                     }
-
-                    const statusBadge = document.getElementById(`status-${name}`);
-                    statusBadge.innerText = isOnline ? 'Online' : 'Offline';
-                    statusBadge.className = `status-badge ${isOnline ? 'online' : 'offline'}`;
-                    
+                    const badge = document.getElementById(`status-${name}`);
+                    badge.innerText = isOnline ? 'Online' : 'Offline';
+                    badge.className = `status-badge ${isOnline ? 'online' : 'offline'}`;
                     document.getElementById(`sm-${name}`).innerText = Number(stats.sm || 0).toLocaleString();
                     document.getElementById(`tn-${name}`).innerText = Number(stats.tn || 0).toLocaleString();
                     document.getElementById(`hp-${name}`).innerText = Number(stats.hp || 0).toLocaleString();
                     document.getElementById(`mp-${name}`).innerText = Number(stats.mp || 0).toLocaleString();
                     document.getElementById(`sd-${name}`).innerText = Number(stats.sd || 0).toLocaleString();
-                    document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} (Khu ${stats.khu || 0})`;
-                });
-
-                Array.from(charList.children).forEach(child => {
-                    const charName = child.id.replace('card-', '');
-                    if (!data[charName]) child.remove();
+                    document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} (${stats.khu || 0})`;
                 });
             });
         }
@@ -230,8 +227,8 @@
             const uidText = document.getElementById('my-uid').innerText;
             navigator.clipboard.writeText(uidText).then(() => {
                 const btn = document.querySelector('.copy-btn');
-                btn.innerText = "ĐÃ CHÉP!";
-                setTimeout(() => btn.innerText = "SAO CHÉP", 1500);
+                btn.innerText = "OK!";
+                setTimeout(() => btn.innerText = "SAO CHÉP", 1200);
             });
         }
     </script>
