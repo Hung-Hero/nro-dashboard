@@ -161,8 +161,11 @@
 
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
+            const currentUser = firebase.auth().currentUser;
+
             db.ref('users/' + uid + '/username').on('value', snap => {
-                document.getElementById('user-name').innerText = snap.val() || "Người dùng";
+                const nameInDb = snap.val();
+                document.getElementById('user-name').innerText = nameInDb || (currentUser ? currentUser.email.split('@')[0] : "Người dùng");
             });
 
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
