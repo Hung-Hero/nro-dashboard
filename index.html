@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO DASHBOARD - ZERO ALIGNMENT ERROR</title>
+    <title>NRO DASHBOARD - CLEAN UI</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
@@ -21,7 +21,7 @@
 
         .container { max-width: 1200px; margin: auto; }
 
-        /* --- FIX LỆCH TUYỆT ĐỐI --- */
+        /* --- HEADER BOX CLEAN --- */
         .header-box { 
             background: var(--card); padding: 25px; border-radius: 20px; 
             margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
@@ -30,67 +30,58 @@
         .welcome-text { font-weight: 700; font-size: 1.2em; margin-bottom: 15px; display: block; }
 
         .controls-row { 
-            display: flex; align-items: stretch; justify-content: space-between; gap: 15px; width: 100%; 
+            display: flex; align-items: stretch; justify-content: space-between; gap: 12px; width: 100%; 
         }
 
         .uid-wrapper { 
             display: flex; 
-            align-items: center; /* Căn giữa theo chiều dọc */
+            align-items: center; 
             background: #f8fafc; 
-            padding: 0 15px; 
-            height: 48px; /* Ép độ cao cố định */
+            padding: 0 12px 0 18px; /* Padding trái nhiều hơn để dãy số không sát lề */
+            height: 50px; 
             border-radius: 12px; 
             border: 1px solid var(--border); 
             flex: 1; 
             min-width: 0; 
         }
 
-        .uid-label { 
-            font-size: 13px; 
-            color: var(--sub); 
-            font-weight: 700; 
-            white-space: nowrap;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            height: 100%; /* Chiếm hết chiều cao wrapper */
-        }
-
         #my-uid { 
             font-family: 'Consolas', monospace; 
             color: var(--primary); 
-            font-size: 15px; /* Tăng nhẹ kích thước cho dễ nhìn */
+            font-size: 15px; 
             font-weight: 600; 
             overflow: hidden; 
             text-overflow: ellipsis; 
             white-space: nowrap; 
             flex: 1; 
             display: flex;
-            align-items: center; /* Quan trọng để căn mã số thẳng hàng với label */
+            align-items: center;
             height: 100%;
-            margin-top: 1px; /* Tinh chỉnh bù trừ cho font Consolas thường bị nhảy lên trên */
+            letter-spacing: 0.5px;
         }
 
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 0 15px; height: 32px; border-radius: 8px; cursor: pointer; 
+            padding: 0 15px; height: 34px; border-radius: 8px; cursor: pointer; 
             font-size: 11px; font-weight: 800; white-space: nowrap;
             display: flex; align-items: center; justify-content: center;
+            margin-left: 10px;
         }
 
         .logout-btn { 
             background: var(--red); color: white; border: none; 
             padding: 0 20px; border-radius: 12px; font-weight: 700; 
-            cursor: pointer; height: 48px; display: flex; align-items: center;
-            justify-content: center;
+            cursor: pointer; height: 50px; display: flex; align-items: center;
+            justify-content: center; transition: 0.2s;
         }
+        .logout-btn:hover { background: #dc2626; }
 
         /* Danh sách nhân vật (Mỗi chỉ số 1 dòng) */
         #char-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .char-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .char-name { font-weight: 800; color: var(--primary); font-size: 1.3em; }
-        
+
         .stat-grid { display: flex; flex-direction: column; gap: 8px; }
         .stat-item { 
             background: #f8fafc; padding: 12px 15px; border-radius: 10px; 
@@ -103,7 +94,10 @@
         .chat-input { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; outline: none; }
         .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        @media (max-width: 600px) { .controls-row { flex-direction: column; } .uid-wrapper, .logout-btn { width: 100%; height: 44px; } }
+        @media (max-width: 600px) { 
+            .controls-row { flex-direction: column; } 
+            .uid-wrapper, .logout-btn { width: 100%; height: 48px; }
+        }
     </style>
 </head>
 <body>
@@ -112,8 +106,7 @@
             <span class="welcome-text">Xin chào: <span id="user-name">...</span> 👋</span>
             <div class="controls-row">
                 <div class="uid-wrapper">
-                    <span class="uid-label">Mã UID:</span>
-                    <span id="my-uid">Đang tải...</span>
+                    <span id="my-uid">Đang tải mã...</span>
                     <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
                 </div>
                 <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
