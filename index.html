@@ -176,7 +176,7 @@
                 Object.keys(data).forEach(name => {
                     const stats = data[name];
                     if (name === "last_update" || name === "chat_cmd" || typeof stats !== 'object') return;
-                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 40;
+                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 10;
                     let card = document.getElementById(`card-${name}`);
                     
                     if (!card) {
