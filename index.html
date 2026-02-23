@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO DASHBOARD - CLEAN UI</title>
+    <title>NRO DASHBOARD</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
@@ -103,7 +103,7 @@
 <body>
     <div class="container">
         <div class="header-box">
-            <span class="welcome-text">Xin chào: <span id="user-name">...</span> 👋</span>
+            <span class="welcome-text">Xin chào: <span id="user-name">...</span></span>
             <div class="controls-row">
                 <div class="uid-wrapper">
                     <span id="my-uid">Đang tải mã...</span>
@@ -173,7 +173,7 @@
                                 <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value" id="pos-${name}">---</span></div>
                             </div>
                             <div class="chat-control">
-                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat PC..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
+                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
                                 <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
                             </div>
                         `;
@@ -213,7 +213,7 @@
             const uidText = document.getElementById('my-uid').innerText;
             navigator.clipboard.writeText(uidText).then(() => {
                 const btn = document.querySelector('.copy-btn');
-                btn.innerText = "COPIED!";
+                btn.innerText = "ĐÃ SAO CHÉP!";
                 setTimeout(() => btn.innerText = "SAO CHÉP", 1500);
             });
         }
