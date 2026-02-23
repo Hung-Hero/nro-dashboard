@@ -96,10 +96,40 @@
         .stat-label { font-size: 10px; color: var(--sub); text-transform: uppercase; font-weight: 700; }
         .stat-value { font-weight: 700; font-size: 13px; }
 
-        .chat-control { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px dashed var(--border); }
-        .chat-input { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; outline: none; font-size: 14px; }
-        .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        /* Container chứa ô chat và nút gửi */
+.chat-control { 
+    margin-top: 15px; 
+    display: flex; 
+    gap: 8px; 
+    padding-top: 15px; 
+    border-top: 1px dashed var(--border);
+    width: 100%; /* Đảm bảo không vượt quá card */
+    box-sizing: border-box; 
+}
 
+/* Ô nhập liệu */
+.chat-input { 
+    flex: 1; /* Tự động co giãn để chiếm phần còn lại */
+    min-width: 0; /* Quan trọng: giúp input không bị đẩy bung khung trên mobile */
+    padding: 10px; 
+    border: 1.5px solid var(--border); 
+    border-radius: 8px; 
+    outline: none; 
+    font-size: 14px; 
+}
+
+/* Nút gửi */
+.send-btn { 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    padding: 0 15px; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer;
+    flex-shrink: 0; /* KHÔNG cho phép nút bị bóp méo */
+    white-space: nowrap; /* Giữ chữ GỬI trên 1 hàng */
+}
         @media (max-width: 500px) { 
             #my-uid { font-size: 12px; }
             .copy-btn { padding: 0 8px; font-size: 9px; }
