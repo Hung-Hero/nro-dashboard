@@ -33,38 +33,23 @@
             display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; 
         }
 
-        /* --- SỬA LỖI TRÀN NÚT TẠI ĐÂY --- */
         .uid-wrapper { 
-            display: flex; 
-            align-items: center; 
-            background: #f8fafc; 
-            padding: 0 10px 0 15px; 
-            height: 48px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            flex: 1; /* Chiếm không gian còn lại */
-            min-width: 0; /* Quan trọng: cho phép flex item thu nhỏ hơn nội dung của nó */
+            display: flex; align-items: center; background: #f8fafc; 
+            padding: 0 10px 0 15px; height: 48px; border-radius: 12px; 
+            border: 1px solid var(--border); flex: 1; min-width: 0; 
         }
 
         #my-uid { 
-            font-family: 'Consolas', monospace; 
-            color: var(--primary); 
-            font-size: 14px; 
-            font-weight: 600; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; /* Hiện dấu ... nếu quá dài */
-            flex: 1;
-            letter-spacing: 0.2px;
+            font-family: 'Consolas', monospace; color: var(--primary); 
+            font-size: 14px; font-weight: 600; white-space: nowrap; 
+            overflow: hidden; text-overflow: ellipsis; flex: 1;
         }
 
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
             padding: 0 12px; height: 32px; border-radius: 8px; cursor: pointer; 
             font-size: 10px; font-weight: 800; white-space: nowrap;
-            flex-shrink: 0; /* KHÔNG CHO PHÉP NÚT BỊ CO LẠI HOẶC TRÀN */
-            display: flex; align-items: center; justify-content: center;
-            margin-left: 8px;
+            flex-shrink: 0; margin-left: 8px;
         }
 
         .logout-btn { 
@@ -74,7 +59,6 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- STATUS VÀ CARD --- */
         .status-badge { 
             padding: 5px 12px; border-radius: 20px; font-size: 10px; 
             font-weight: 800; display: flex; align-items: center; gap: 6px; 
@@ -117,7 +101,6 @@
         .send-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 500px) { 
-            .controls-row { flex-direction: row; } /* Giữ hàng ngang trên mobile cho gọn */
             #my-uid { font-size: 12px; }
             .copy-btn { padding: 0 8px; font-size: 9px; }
         }
@@ -153,6 +136,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        let currentCharsData = {}; // Lưu trữ dữ liệu để kiểm tra offline liên tục
 
         auth.onAuthStateChanged((user) => {
             if (user) { document.body.style.display = "block"; startMonitor(user.uid); }
@@ -161,58 +145,80 @@
 
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
-            const currentUser = firebase.auth().currentUser;
-
+            
             db.ref('users/' + uid + '/username').on('value', snap => {
-                const nameInDb = snap.val();
-                document.getElementById('user-name').innerText = nameInDb || (currentUser ? currentUser.email.split('@')[0] : "Người dùng");
+                document.getElementById('user-name').innerText = snap.val() || "Người dùng";
             });
 
+            // Lắng nghe dữ liệu
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
-                const charList = document.getElementById('char-list');
                 const data = snapshot.val();
-                if (!data) { charList.innerHTML = ""; return; }
+                if (!data) return;
+                currentCharsData = data;
+                renderDashboard(data);
+            });
 
-                Object.keys(data).forEach(name => {
-                    const stats = data[name];
-                    if (name === "last_update" || name === "chat_cmd" || typeof stats !== 'object') return;
-                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 10;
-                    let card = document.getElementById(`card-${name}`);
-                    
-                    if (!card) {
-                        card = document.createElement('div');
-                        card.id = `card-${name}`;
-                        card.className = 'char-card';
-                        card.innerHTML = `
-                            <div class="char-header">
-                                <span class="char-name">${name}</span>
-                                <span class="status-badge" id="status-${name}"></span>
-                            </div>
-                            <div class="stat-grid">
-                                <div class="stat-item"><span class="stat-label">Sức mạnh</span><span class="stat-value" id="sm-${name}" style="color:#f59e0b">0</span></div>
-                                <div class="stat-item"><span class="stat-label">Tiềm năng</span><span class="stat-value" id="tn-${name}" style="color:#2563eb">0</span></div>
-                                <div class="stat-item"><span class="stat-label">HP</span><span class="stat-value" id="hp-${name}" style="color:#ef4444">0</span></div>
-                                <div class="stat-item"><span class="stat-label">MP</span><span class="stat-value" id="mp-${name}" style="color:#3b82f6">0</span></div>
-                                <div class="stat-item"><span class="stat-label">Sức đánh</span><span class="stat-value" id="sd-${name}" style="color:#b91c1c">0</span></div>
-                                <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value" id="pos-${name}">---</span></div>
-                            </div>
-                            <div class="chat-control">
-                                <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
-                                <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
-                            </div>
-                        `;
-                        charList.appendChild(card);
-                    }
-                    const badge = document.getElementById(`status-${name}`);
+            // BỘ ĐẾM KIỂM TRA OFFLINE MỖI 3 GIÂY (Không cần reload trang)
+            setInterval(() => {
+                updateAllStatus();
+            }, 3000);
+        }
+
+        function renderDashboard(data) {
+            const charList = document.getElementById('char-list');
+            Object.keys(data).forEach(name => {
+                const stats = data[name];
+                if (name === "last_update" || name === "chat_cmd" || typeof stats !== 'object') return;
+                
+                let card = document.getElementById(`card-${name}`);
+                if (!card) {
+                    card = document.createElement('div');
+                    card.id = `card-${name}`;
+                    card.className = 'char-card';
+                    card.innerHTML = `
+                        <div class="char-header">
+                            <span class="char-name">${name}</span>
+                            <span class="status-badge" id="status-${name}">Offline</span>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-item"><span class="stat-label">Sức mạnh</span><span class="stat-value" id="sm-${name}" style="color:#f59e0b">0</span></div>
+                            <div class="stat-item"><span class="stat-label">Tiềm năng</span><span class="stat-value" id="tn-${name}" style="color:#2563eb">0</span></div>
+                            <div class="stat-item"><span class="stat-label">HP</span><span class="stat-value" id="hp-${name}" style="color:#ef4444">0</span></div>
+                            <div class="stat-item"><span class="stat-label">MP</span><span class="stat-value" id="mp-${name}" style="color:#3b82f6">0</span></div>
+                            <div class="stat-item"><span class="stat-label">Sức đánh</span><span class="stat-value" id="sd-${name}" style="color:#b91c1c">0</span></div>
+                            <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value" id="pos-${name}">---</span></div>
+                        </div>
+                        <div class="chat-control">
+                            <input type="text" id="chat-${name}" class="chat-input" placeholder="Lệnh chat..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
+                            <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
+                        </div>
+                    `;
+                    charList.appendChild(card);
+                }
+
+                // Cập nhật chỉ số
+                document.getElementById(`sm-${name}`).innerText = Number(stats.sm || 0).toLocaleString();
+                document.getElementById(`tn-${name}`).innerText = Number(stats.tn || 0).toLocaleString();
+                document.getElementById(`hp-${name}`).innerText = Number(stats.hp || 0).toLocaleString();
+                document.getElementById(`mp-${name}`).innerText = Number(stats.mp || 0).toLocaleString();
+                document.getElementById(`sd-${name}`).innerText = Number(stats.sd || 0).toLocaleString();
+                document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} (Khu: ${stats.khu || 0})`;
+            });
+            updateAllStatus(); // Cập nhật màu Online/Offline ngay lập tức
+        }
+
+        function updateAllStatus() {
+            Object.keys(currentCharsData).forEach(name => {
+                const stats = currentCharsData[name];
+                if (typeof stats !== 'object') return;
+                
+                const badge = document.getElementById(`status-${name}`);
+                if (badge) {
+                    const now = Math.floor(Date.now() / 1000);
+                    const isOnline = (now - (stats.last_update || 0)) < 10;
                     badge.innerText = isOnline ? 'Online' : 'Offline';
                     badge.className = `status-badge ${isOnline ? 'online' : 'offline'}`;
-                    document.getElementById(`sm-${name}`).innerText = Number(stats.sm || 0).toLocaleString();
-                    document.getElementById(`tn-${name}`).innerText = Number(stats.tn || 0).toLocaleString();
-                    document.getElementById(`hp-${name}`).innerText = Number(stats.hp || 0).toLocaleString();
-                    document.getElementById(`mp-${name}`).innerText = Number(stats.mp || 0).toLocaleString();
-                    document.getElementById(`sd-${name}`).innerText = Number(stats.sd || 0).toLocaleString();
-                    document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} [Khu ${stats.khu || 0}]`;
-                });
+                }
             });
         }
 
