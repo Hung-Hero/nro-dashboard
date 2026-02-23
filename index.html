@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO CONTROLLER - DASHBOARD</title>
+    <title>NRO CONTROLLER - FULL WIDTH UID</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
@@ -21,43 +21,47 @@
 
         .container { max-width: 1200px; margin: auto; }
 
-        /* --- HEADER BOX --- */
+        /* HEADER SECTION */
         .header-box { 
-            background: var(--card); padding: 20px; border-radius: 16px; 
+            background: var(--card); padding: 25px; border-radius: 20px; 
             margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 15px;
+            display: flex; flex-direction: column; gap: 20px;
         }
 
-        .welcome-text { font-weight: 700; font-size: 1.1em; margin-bottom: 8px; display: block; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .welcome-text { font-weight: 700; font-size: 1.2em; margin: 0; }
         
-        /* Ô UID VỪA KHÍT MÀN HÌNH */
+        /* THANH UID RỘNG TOÀN MÀN HÌNH */
         .uid-row { 
-            display: flex; align-items: center; gap: 8px;
-            background: #f8fafc; padding: 8px 12px; border-radius: 8px;
+            display: flex; align-items: center; gap: 12px;
+            background: #f8fafc; padding: 12px 20px; border-radius: 12px;
             border: 1px solid var(--border);
-            max-width: 100%; box-sizing: border-box; width: fit-content;
+            width: 100%; /* Giãn ra hết chiều rộng container */
+            box-sizing: border-box; 
         }
-        .uid-label { font-size: 12px; color: var(--sub); font-weight: 600; text-transform: uppercase; }
+        
+        .uid-label { font-size: 13px; color: var(--sub); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+        
         #my-uid { 
             font-family: 'Consolas', monospace; color: var(--primary); 
-            font-size: 13px; font-weight: 600;
+            font-size: 15px; font-weight: 600;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
-            flex: 1; min-width: 0; 
+            flex: 1; /* Chiếm toàn bộ khoảng trống ở giữa */
         }
+
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 5px 10px; border-radius: 6px; cursor: pointer; 
-            font-size: 10px; font-weight: 800; transition: 0.2s; white-space: nowrap;
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; 
+            font-size: 12px; font-weight: 800; transition: 0.2s; white-space: nowrap;
         }
+        .copy-btn:hover { opacity: 0.9; }
 
         .logout-btn { 
             background: var(--red); color: white; border: none; 
-            padding: 10px 18px; border-radius: 10px; font-weight: 700; 
-            cursor: pointer; transition: 0.2s;
+            padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;
         }
 
-        /* --- GRID NHÂN VẬT --- */
+        /* GRID NHÂN VẬT */
         #char-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
@@ -66,43 +70,35 @@
 
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
-            border: 1px solid var(--border); transition: 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid var(--border); transition: 0.3s;
         }
         .char-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
 
         .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .char-name { font-weight: 800; color: var(--primary); font-size: 1.25em; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.3em; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .online { background: #dcfce7; color: #10b981; }
         .offline { background: #f1f5f9; color: var(--sub); }
 
-        /* CHỈ SỐ */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-item { background: #f8fafc; padding: 10px; border-radius: 10px; }
         .stat-label { font-size: 10px; color: var(--sub); text-transform: uppercase; font-weight: 600; }
-        .stat-value { font-weight: 700; font-size: 14px; display: block; margin-top: 4px; }
+        .stat-value { font-weight: 700; font-size: 14px; margin-top: 4px; display: block; }
 
-        /* Ô CHAT */
         .chat-control {
             margin-top: 15px; display: flex; gap: 8px;
             padding-top: 15px; border-top: 1px dashed var(--border);
         }
         .chat-input {
             flex: 1; padding: 10px; border: 2px solid var(--border);
-            border-radius: 8px; font-size: 13px; outline: none; transition: 0.2s;
+            border-radius: 8px; font-size: 13px; outline: none;
         }
-        .chat-input:focus { border-color: var(--primary); }
         .send-btn {
             background: var(--primary); color: white; border: none;
             padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer;
         }
 
-        /* RESPONSIVE MOBILE */
-        @media (max-width: 480px) {
-            .uid-row { width: 100%; }
-            .header-box { flex-direction: column; align-items: flex-start; }
-            .logout-btn { width: 100%; }
+        @media (max-width: 600px) {
             #char-list { grid-template-columns: 1fr; }
         }
     </style>
@@ -110,21 +106,22 @@
 <body>
     <div class="container">
         <div class="header-box">
-            <div class="header-left">
-                <span class="welcome-text">Xin chào, <span id="user-name">...</span> 👋</span>
-                <div class="uid-row">
-                    <span class="uid-label">Mã UID:</span>
-                    <span id="my-uid">...</span>
-                    <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
-                </div>
+            <div class="header-top">
+                <p class="welcome-text">Xin chào, <span id="user-name">s2hunghero</span> 👋</p>
+                <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
             </div>
-            <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
+            <div class="uid-row">
+                <span class="uid-label">Mã UID:</span>
+                <span id="my-uid">Đang tải...</span>
+                <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
+            </div>
         </div>
+        
         <div id="char-list"></div>
     </div>
 
     <script>
-        // --- GIỮ NGUYÊN TOÀN BỘ LOGIC FIREBASE ---
+        // CẤU HÌNH FIREBASE (Giữ nguyên của bạn)
         const firebaseConfig = {
             apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
             authDomain: "nro-controller.firebaseapp.com",
@@ -193,11 +190,8 @@
             const input = document.getElementById(`chat-${name}`);
             const uid = document.getElementById('my-uid').innerText;
             if (!input.value.trim()) return;
-            
-            db.ref(`users/${uid}/chars/${name}/chat_cmd`).set({
-                text: input.value.trim(),
-                time: Date.now()
-            }).then(() => { input.value = ""; });
+            db.ref(`users/${uid}/chars/${name}/chat_cmd`).set({ text: input.value.trim(), time: Date.now() });
+            input.value = "";
         }
 
         function logout() { if(confirm("Đăng xuất?")) auth.signOut(); }
