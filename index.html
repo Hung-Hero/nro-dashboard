@@ -204,7 +204,7 @@
                 document.getElementById(`hp-${name}`).innerText = Number(stats.hp || 0).toLocaleString();
                 document.getElementById(`mp-${name}`).innerText = Number(stats.mp || 0).toLocaleString();
                 document.getElementById(`sd-${name}`).innerText = Number(stats.sd || 0).toLocaleString();
-                document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} (Khu: ${stats.khu || 0})`;
+                document.getElementById(`pos-${name}`).innerText = `${stats.map || "---"} [Khu ${stats.khu || 0}]`;
             });
             updateAllStatus(); // Cập nhật màu Online/Offline ngay lập tức
         }
