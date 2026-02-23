@@ -78,9 +78,15 @@
 
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
-            db.ref('users/' + uid + '/username').on('value', snap => {
-                document.getElementById('user-name').innerText = snap.val() || "Admin";
-            });
+    
+    // Lấy thông tin người dùng hiện tại từ Firebase Auth
+    const currentUser = firebase.auth().currentUser;
+
+    db.ref('users/' + uid + '/username').on('value', snap => {
+        const nameInDb = snap.val();
+        // Ưu tiên: Tên trong DB > Email người dùng > "Người dùng NRO"
+        document.getElementById('user-name').innerText = nameInDb || (currentUser ? currentUser.email.split('@')[0] : "Người dùng NRO");
+    });
 
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
                 const charList = document.getElementById('char-list');
