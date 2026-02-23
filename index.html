@@ -3,88 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NRO CONTROLLER - PC DASHBOARD</title>
+    <title>NRO CONTROLLER - PC VERSION</title>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database-compat.js"></script>
+    
     <style>
         :root { 
             --bg: #f1f5f9; --card: #ffffff; --primary: #2563eb; 
             --red: #ef4444; --text: #1e293b; --sub: #64748b; --border: #e2e8f0;
         }
+
         body { 
-            background: var(--bg); font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             margin: 0; padding: 20px; display: none; color: var(--text);
         }
+
         .container { max-width: 1200px; margin: auto; }
 
-        /* Header tối ưu cho PC */
+        /* HEADER BOX - PC OPTIMIZED */
         .header-box { 
-            background: var(--card); padding: 20px; border-radius: 16px; 
+            background: var(--card); padding: 20px 25px; border-radius: 16px; 
             margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .welcome-text { font-weight: 700; font-size: 1.1em; margin-bottom: 8px; }
-        
-        /* Ô UID gọn gàng */
+
+        .header-left { display: flex; flex-direction: column; gap: 8px; }
+        .welcome-text { font-weight: 700; font-size: 1.15em; margin: 0; }
+
+        /* Ô UID HỢP LÝ */
         .uid-row { 
             display: inline-flex; align-items: center; gap: 8px;
             background: #f8fafc; padding: 6px 12px; border-radius: 8px;
             border: 1px solid var(--border);
         }
-        .uid-label { font-size: 13px; color: var(--sub); font-weight: 500; }
-        #my-uid { font-family: monospace; color: var(--primary); font-size: 13px; }
+        .uid-label { font-size: 12px; color: var(--sub); font-weight: 600; text-transform: uppercase; }
+        #my-uid { font-family: 'Consolas', monospace; color: var(--primary); font-size: 13px; font-weight: 600; }
+        
         .copy-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700;
+            padding: 4px 10px; border-radius: 6px; cursor: pointer; 
+            font-size: 10px; font-weight: 800; transition: 0.2s;
         }
+        .copy-btn:hover { filter: brightness(1.1); }
 
         .logout-btn { 
             background: var(--red); color: white; border: none; 
-            padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer;
+            padding: 12px 20px; border-radius: 10px; font-weight: 700; 
+            cursor: pointer; transition: 0.2s;
         }
+        .logout-btn:hover { transform: scale(1.02); opacity: 0.9; }
 
-        /* Hệ thống Grid nhân vật */
+        /* GRID NHÂN VẬT */
         #char-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 20px;
         }
 
+        /* THẺ NHÂN VẬT */
         .char-card { 
             background: var(--card); border-radius: 20px; padding: 20px; 
-            border: 1px solid var(--border); transition: 0.3s ease;
+            border: 1px solid var(--border); transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .char-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .char-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
 
-        .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .char-name { font-weight: 800; color: var(--primary); font-size: 1.2em; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .online { background: #dcfce7; color: #10b981; }
-        .offline { background: #f1f5f9; color: var(--sub); }
+        .char-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .char-name { font-weight: 800; color: var(--primary); font-size: 1.25em; letter-spacing: -0.5px; }
+        
+        .status-badge { 
+            padding: 5px 12px; border-radius: 20px; font-size: 10px; 
+            font-weight: 800; text-transform: uppercase; border: 1px solid transparent;
+        }
+        .online { background: #dcfce7; color: #10b981; border-color: #bbf7d0; }
+        .offline { background: #f1f5f9; color: var(--sub); border-color: var(--border); }
 
+        /* STAT GRID TRONG THẺ */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-item { background: #f8fafc; padding: 8px; border-radius: 8px; }
-        .stat-label { font-size: 10px; color: var(--sub); text-transform: uppercase; }
-        .stat-value { font-weight: 700; font-size: 13px; display: block; margin-top: 2px; }
+        .stat-item { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #f1f5f9; }
+        .stat-label { font-size: 10px; color: var(--sub); text-transform: uppercase; font-weight: 600; display: block; }
+        .stat-value { font-weight: 700; font-size: 14px; margin-top: 4px; display: block; }
 
-        /* Ô Chat */
+        /* Ô CHAT ĐIỀU KHIỂN */
         .chat-control {
-            margin-top: 15px; display: flex; gap: 8px;
-            padding-top: 15px; border-top: 1px solid var(--border);
+            margin-top: 20px; display: flex; gap: 8px;
+            padding-top: 15px; border-top: 1px dashed var(--border);
         }
         .chat-input {
-            flex: 1; padding: 10px; border: 1px solid var(--border);
-            border-radius: 8px; font-size: 13px; outline: none;
+            flex: 1; padding: 12px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 13px; outline: none; transition: 0.2s;
         }
-        .chat-input:focus { border-color: var(--primary); }
+        .chat-input:focus { border-color: var(--primary); background: #fff; }
+
         .send-btn {
             background: var(--primary); color: white; border: none;
-            padding: 0 15px; border-radius: 8px; font-weight: 700; cursor: pointer;
+            padding: 0 18px; border-radius: 10px; font-weight: 700; 
+            cursor: pointer; transition: 0.2s;
         }
+        .send-btn:hover { filter: brightness(1.1); }
+        .send-btn:active { transform: scale(0.95); }
 
+        /* Mobile Responsive */
         @media (max-width: 600px) {
-            .header-box { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-box { flex-direction: column; align-items: flex-start; }
+            .logout-btn { width: 100%; }
             #char-list { grid-template-columns: 1fr; }
         }
     </style>
@@ -92,20 +119,22 @@
 <body>
     <div class="container">
         <div class="header-box">
-            <div>
+            <div class="header-left">
                 <div class="welcome-text">Xin chào, <span id="user-name">...</span> 👋</div>
                 <div class="uid-row">
-                    <span class="uid-label">UID:</span>
+                    <span class="uid-label">Mã UID:</span>
                     <span id="my-uid">...</span>
                     <button onclick="copyUID()" class="copy-btn">SAO CHÉP</button>
                 </div>
             </div>
             <button onclick="logout()" class="logout-btn">ĐĂNG XUẤT</button>
         </div>
+
         <div id="char-list"></div>
     </div>
 
     <script>
+        // GIỮ NGUYÊN CẤU HÌNH FIREBASE CỦA BẠN
         const firebaseConfig = {
             apiKey: "AIzaSyBLmjb7_WjZJx7Fidvt10fuHaUC2x4LEBQ",
             authDomain: "nro-controller.firebaseapp.com",
@@ -119,6 +148,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
+        // GIỮ NGUYÊN LOGIC XÁC THỰC
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.body.style.display = "block";
@@ -128,8 +158,10 @@
             }
         });
 
+        // GIỮ NGUYÊN LOGIC THEO DÕI DỮ LIỆU (MONITOR)
         function startMonitor(uid) {
             document.getElementById('my-uid').innerText = uid;
+
             db.ref('users/' + uid + '/username').on('value', snap => {
                 document.getElementById('user-name').innerText = snap.val() || "Admin";
             });
@@ -137,47 +169,104 @@
             db.ref('users/' + uid + '/chars').on('value', (snapshot) => {
                 const charList = document.getElementById('char-list');
                 const data = snapshot.val();
-                charList.innerHTML = "";
-                if (!data) return;
+                
+                if (!data) {
+                    charList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--sub); padding:100px;">Chưa có dữ liệu nhân vật.</div>`;
+                    return;
+                }
 
+                charList.innerHTML = "";
                 Object.keys(data).forEach(name => {
                     const stats = data[name];
-                    const isOnline = (Math.floor(Date.now() / 1000) - (stats.last_update || 0)) < 40;
-                    const card = document.createElement('div');
-                    card.className = 'char-card';
-                    card.innerHTML = `
-                        <div class="char-header">
-                            <span class="char-name">${name}</span>
-                            <span class="status-badge ${isOnline ? 'online' : 'offline'}">${isOnline ? '● Online' : '○ Offline'}</span>
-                        </div>
-                        <div class="stat-grid">
-                            <div class="stat-item"><span class="stat-label">Sức mạnh</span><span class="stat-value">${Number(stats.sm || 0).toLocaleString()}</span></div>
-                            <div class="stat-item"><span class="stat-label">HP</span><span class="stat-value">${Number(stats.hp || 0).toLocaleString()}</span></div>
-                            <div class="stat-item"><span class="stat-label">Vị trí</span><span class="stat-value">${stats.map || "---"}</span></div>
-                            <div class="stat-item"><span class="stat-label">Khu</span><span class="stat-value">${stats.khu || 0}</span></div>
-                        </div>
-                        <div class="chat-control">
-                            <input type="text" id="chat-${name}" class="chat-input" placeholder="Nhập lệnh..." onkeypress="if(event.key==='Enter') sendChat('${name}')">
-                            <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
-                        </div>
-                    `;
-                    charList.appendChild(card);
+                    const lastUpdate = stats.last_update || 0;
+                    // Logic tính Online (trong vòng 40 giây)
+                    const isOnline = (Math.floor(Date.now() / 1000) - lastUpdate) < 40;
+
+                    if(typeof stats === 'object') {
+                        const card = document.createElement('div');
+                        card.className = 'char-card';
+                        card.innerHTML = `
+                            <div class="char-header">
+                                <span class="char-name">${name}</span>
+                                <span class="status-badge ${isOnline ? 'online' : 'offline'}">
+                                    ${isOnline ? '● Online' : '○ Offline'}
+                                </span>
+                            </div>
+                            
+                            <div class="stat-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Sức mạnh</span>
+                                    <span class="stat-value" style="color:#f59e0b">${Number(stats.sm || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Tiềm năng</span>
+                                    <span class="stat-value" style="color:#2563eb">${Number(stats.tn || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">HP / MP</span>
+                                    <span class="stat-value" style="color:#ef4444">${Number(stats.hp || 0).toLocaleString()} / ${Number(stats.mp || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Sức đánh</span>
+                                    <span class="stat-value" style="color:#b91c1c">${Number(stats.sd || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="stat-item" style="grid-column: span 2;">
+                                    <span class="stat-label">Vị trí hiện tại</span>
+                                    <span class="stat-value">${stats.map || "---"} (Khu ${stats.khu || 0})</span>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-control">
+                                <input type="text" id="chat-val-${name}" class="chat-input" 
+                                    placeholder="Lệnh chat cho ${name}..." 
+                                    onkeypress="if(event.key==='Enter') sendChat('${name}')">
+                                <button onclick="sendChat('${name}')" class="send-btn">GỬI</button>
+                            </div>
+                        `;
+                        charList.appendChild(card);
+                    }
                 });
             });
         }
 
-        function sendChat(name) {
-            const input = document.getElementById(`chat-${name}`);
+        // GIỮ NGUYÊN LOGIC GỬI CHAT
+        function sendChat(charName) {
             const uid = document.getElementById('my-uid').innerText;
-            if (!input.value.trim()) return;
-            db.ref(`users/${uid}/chars/${name}/chat_cmd`).set({ text: input.value.trim(), time: Date.now() });
-            input.value = "";
+            const input = document.getElementById(`chat-val-${charName}`);
+            const content = input.value.trim();
+
+            if (!content) return;
+
+            // Logic set node chat_cmd
+            db.ref(`users/${uid}/chars/${charName}/chat_cmd`).set({
+                text: content,
+                time: Date.now()
+            }).then(() => {
+                input.value = ""; // Xóa input sau khi gửi
+            }).catch(err => {
+                console.error("Lỗi gửi lệnh:", err);
+            });
         }
 
-        function logout() { if(confirm("Đăng xuất?")) auth.signOut(); }
+        // GIỮ NGUYÊN LOGIC ĐĂNG XUẤT
+        function logout() {
+            if(confirm("Bạn muốn đăng xuất?")) {
+                auth.signOut();
+            }
+        }
+
+        // GIỮ NGUYÊN LOGIC COPY
         function copyUID() {
-            navigator.clipboard.writeText(document.getElementById('my-uid').innerText);
-            alert("Đã sao chép!");
+            const uidText = document.getElementById('my-uid').innerText;
+            navigator.clipboard.writeText(uidText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerText = "ĐÃ CHÉP!";
+                btn.style.background = "#10b981";
+                setTimeout(() => {
+                    btn.innerText = "SAO CHÉP";
+                    btn.style.background = "var(--primary)";
+                }, 1500);
+            });
         }
     </script>
 </body>
